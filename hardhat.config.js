@@ -1,4 +1,5 @@
 
+require('dotenv').config()
 /* global ethers task */
 require('@nomiclabs/hardhat-waffle')
 
@@ -19,5 +20,8 @@ task('accounts', 'Prints the list of accounts', async () => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  solidity: '0.8.6'
+  solidity: '0.8.6',
+  polygon: {
+    url: process.env.POLYGON_URL
+  }
 }
