@@ -20,7 +20,7 @@ task('accounts', 'Prints the list of accounts', async () => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  solidity: '0.8.6',
+  solidity: '0.8.11',
   polygon: {
     url: process.env.POLYGON_URL
   }
