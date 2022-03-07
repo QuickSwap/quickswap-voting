@@ -105,7 +105,8 @@ interface IUniswapV2Pair {
 contract QuickswapVoting {
   IERC20 constant public QUICK = IERC20(0x831753DD7087CaC61aB5644b308642cc1c33Dc13);
   IdQuick constant public DRAGONLAIR = IdQuick(0xf28164A485B0B2C90639E47b0f377b4a438a16B1);
-  IStakingRewardsFactory constant public SRF = IStakingRewardsFactory(0x5D7284e0aCF4dc3b623c93302Ed490fC97aCA8A4);
+  IStakingRewardsFactory constant public SRF1 = IStakingRewardsFactory(0x5D7284e0aCF4dc3b623c93302Ed490fC97aCA8A4);
+  IStakingRewardsFactory constant public SRF2 = IStakingRewardsFactory(0x4A9e6d8119BD971C96F6Be2c86BB58F71fbeBAAA);
     
   address[] quickLPStaking;
 
@@ -139,16 +140,29 @@ contract QuickswapVoting {
     balance_ = QUICK.balanceOf(_owner) + DRAGONLAIR.QUICKBalance(_owner);
     uint256 dQuick;
     for(uint256 i; true; i++) {      
-      (bool success, bytes memory result) = address(SRF).staticcall(abi.encodeWithSelector(IStakingRewardsFactory.rewardTokens.selector, i));
+      (bool success, bytes memory result) = address(SRF1).staticcall(abi.encodeWithSelector(IStakingRewardsFactory.rewardTokens.selector, i));
       if(success == true) {
         address rewardTokenAddress = abi.decode(result, (address));
-        StakingRewardsInfo memory stakingRewardsInfo = SRF.stakingRewardsInfoByRewardToken(rewardTokenAddress);        
-        dQuick += IERC20(stakingRewardsInfo.stakingRewards).balanceOf(_owner);
+        StakingRewardsInfo memory stakingRewardsInfo = SRF1.stakingRewardsInfoByRewardToken(rewardTokenAddress);
+        dQuick += IERC20(stakingRewardsInfo.stakingRewards).balanceOf(_owner);        
       }
       else {
         break;
       }
     }
+
+    for(uint256 i; true; i++) {      
+      (bool success, bytes memory result) = address(SRF2).staticcall(abi.encodeWithSelector(IStakingRewardsFactory.rewardTokens.selector, i));
+      if(success == true) {
+        address rewardTokenAddress = abi.decode(result, (address));
+        StakingRewardsInfo memory stakingRewardsInfo = SRF2.stakingRewardsInfoByRewardToken(rewardTokenAddress);
+        balance_ += IERC20(stakingRewardsInfo.stakingRewards).balanceOf(_owner);        
+      }
+      else {
+        break;
+      }
+    }
+
     balance_ += DRAGONLAIR.dQUICKForQUICK(dQuick);
     balance_ += getLPStakingQuick(_owner);
   }
