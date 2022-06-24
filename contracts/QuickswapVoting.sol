@@ -102,11 +102,145 @@ interface IUniswapV2Pair {
     function initialize(address, address) external;
 }
 
+IERC20 constant  QUICK = IERC20(0x831753DD7087CaC61aB5644b308642cc1c33Dc13);
+IdQuick constant DRAGONLAIR = IdQuick(0xf28164A485B0B2C90639E47b0f377b4a438a16B1);
+IStakingRewardsFactory constant  SRF1 = IStakingRewardsFactory(0x5D7284e0aCF4dc3b623c93302Ed490fC97aCA8A4);
+IStakingRewardsFactory constant  SRF2 = IStakingRewardsFactory(0x4A9e6d8119BD971C96F6Be2c86BB58F71fbeBAAA);
+  
+
+contract QuickswapVoting1 {
+
+  function getQUICKAddress() external pure returns (address) {
+    return address(QUICK);
+  }
+
+  function getDRAGONLAIRAddress() external pure returns (address) {
+    return address(DRAGONLAIR);
+  }
+
+  function getSRF1address() external pure returns (address) {
+    return address(SRF1);
+  }
+
+  function balanceOf(address _owner) external view returns (uint256 balance_) {
+    uint256 dQuick;
+    for(uint256 i; true; i++) {      
+      (bool success, bytes memory result) = address(SRF1).staticcall(abi.encodeWithSelector(IStakingRewardsFactory.rewardTokens.selector, i));
+      if(success == true) {
+        address rewardTokenAddress = abi.decode(result, (address));
+        StakingRewardsInfo memory stakingRewardsInfo = SRF1.stakingRewardsInfoByRewardToken(rewardTokenAddress);
+        dQuick += IERC20(stakingRewardsInfo.stakingRewards).balanceOf(_owner);        
+      }
+      else {
+        break;
+      }
+    }    
+    balance_ = DRAGONLAIR.dQUICKForQUICK(dQuick);    
+  }
+}
+
+contract QuickswapVoting2 {
+
+  function getQUICKAddress() external pure returns (address) {
+    return address(QUICK);
+  }
+
+  function getDRAGONLAIRAddress() external pure returns (address) {
+    return address(DRAGONLAIR);
+  }  
+
+  function getSRF2address() external pure returns (address) {
+    return address(SRF2);
+  }
+
+  function balanceOf(address _owner) external view returns (uint256 balance_) {
+    for(uint256 i; true; i++) {      
+      (bool success, bytes memory result) = address(SRF2).staticcall(abi.encodeWithSelector(IStakingRewardsFactory.rewardTokens.selector, i));
+      if(success == true) {
+        address rewardTokenAddress = abi.decode(result, (address));
+        StakingRewardsInfo memory stakingRewardsInfo = SRF2.stakingRewardsInfoByRewardToken(rewardTokenAddress);
+        balance_ += IERC20(stakingRewardsInfo.stakingRewards).balanceOf(_owner);        
+      }
+      else {
+        break;
+      }
+    }
+  }
+}
+
+
+contract QuickswapVoting3 {
+
+  function getQUICKAddress() external pure returns (address) {
+    return address(QUICK);
+  }
+
+  function getDRAGONLAIRAddress() external pure returns (address) {
+    return address(DRAGONLAIR);
+  }  
+
+  function getLPStakingQuick(address _owner) internal view returns (uint256 balance_) {
+    address[] memory quickLPStaking = new address[](6);
+     // WMATIC-QUICK: 0xd26E16f5a9dfb9Fe32dB7F6386402B8AAe1a5dd7
+    quickLPStaking[0]= 0xd26E16f5a9dfb9Fe32dB7F6386402B8AAe1a5dd7;
+    // TEL-QUICK 0xF8bdC7bC282847EeB5d4291ec79172B48526e9dE
+    quickLPStaking[1] = 0xF8bdC7bC282847EeB5d4291ec79172B48526e9dE;
+    // WETH-QUICK 0x5BcFcc24Db0A16b1C01BAC1342662eBd104e816c
+    quickLPStaking[2] = 0x5BcFcc24Db0A16b1C01BAC1342662eBd104e816c;
+    // USDC-QUICK 0x939290Ed45514E82900BA767bBcfa38eE1067039
+    quickLPStaking[3] = 0x939290Ed45514E82900BA767bBcfa38eE1067039;
+    // GENESIS-QUICK 0x3620418dD43853c35fF8Df90cAb5508FB5df46Bf
+    quickLPStaking[4] = 0x3620418dD43853c35fF8Df90cAb5508FB5df46Bf;
+    // START-QUICK 0xb1b2e2b4cbed8e7b6ff7cca016760cca9260f0ec
+    quickLPStaking[5] = 0xB1B2e2b4cBED8e7b6FF7Cca016760ccA9260f0Ec;
+
+    uint256 length = quickLPStaking.length;
+    for(uint256 i; i < length; i++) {
+      IStakingRewards stakingRewardContract = IStakingRewards(quickLPStaking[i]);
+      IUniswapV2Pair uniToken = IUniswapV2Pair(stakingRewardContract.stakingToken());
+      uint256 quick = stakingRewardContract.balanceOf(_owner) * QUICK.balanceOf(address(uniToken)) / uniToken.totalSupply();
+      balance_ += quick;
+    }
+  }
+
+  function balanceOf(address _owner) external view returns (uint256 balance_) {
+     balance_ = getLPStakingQuick(_owner);
+  }
+
+}
+
+contract QuickswapVoting4 {
+
+  function getQUICKAddress() external pure returns (address) {
+    return address(QUICK);
+  }
+
+  function getDRAGONLAIRAddress() external pure returns (address) {
+    return address(DRAGONLAIR);
+  }  
+
+  function balanceOf(address _owner) external view returns (uint256 balance_) {
+     balance_ = QUICK.balanceOf(_owner) + DRAGONLAIR.QUICKBalance(_owner);
+  }
+}
+
 contract QuickswapVoting {
-  IERC20 constant public QUICK = IERC20(0x831753DD7087CaC61aB5644b308642cc1c33Dc13);
-  IdQuick constant public DRAGONLAIR = IdQuick(0xf28164A485B0B2C90639E47b0f377b4a438a16B1);
-  IStakingRewardsFactory constant public SRF1 = IStakingRewardsFactory(0x5D7284e0aCF4dc3b623c93302Ed490fC97aCA8A4);
-  IStakingRewardsFactory constant public SRF2 = IStakingRewardsFactory(0x4A9e6d8119BD971C96F6Be2c86BB58F71fbeBAAA);
+
+  function getQUICKAddress() external pure returns (address) {
+    return address(QUICK);
+  }
+
+  function getDRAGONLAIRAddress() external pure returns (address) {
+    return address(DRAGONLAIR);
+  }
+
+  function getSRF1address() external pure returns (address) {
+    return address(SRF1);
+  }
+
+  function getSRF2address() external pure returns (address) {
+    return address(SRF2);
+  }
     
   address[] quickLPStaking;
 
@@ -167,4 +301,66 @@ contract QuickswapVoting {
     balance_ += getLPStakingQuick(_owner);
   }
  
+}
+
+
+// new quick
+IERC20 constant NEWQUICK = IERC20(0xB5C064F955D8e7F38fE0460C556a72987494eE17);
+
+contract QuickswapVoting5 {
+  function balanceOf(address _owner) external view returns (uint256 balance_) {
+    return NEWQUICK.balanceOf(_owner) / 1000;
+  }
+}
+
+// New Quick LP staking voting
+contract QuickswapVoting6 {
+ 
+
+  function getLPStakingQuick(address _owner) internal view returns (uint256 balance_) {
+    address[] memory quickLPStaking = new address[](3);
+     // ETH-QUICK(new)
+    quickLPStaking[0]= 0xc950f169Cb7D3B1CD2FfbE9Fb7efD2CD0E6235c2;
+    // USDC-QUICK(new)
+    quickLPStaking[1] = 0xF49dC344E2B110540e7c71B9d067c455C7A90d5a;  
+    // MATIC-QUICK(new)
+    quickLPStaking[2] = 0xa68845c077f7c0a3CBf9b34DcD1d5770a234D8Af;
+
+
+    uint256 length = quickLPStaking.length;
+    for(uint256 i; i < length; i++) {
+      IStakingRewards stakingRewardContract = IStakingRewards(quickLPStaking[i]);
+      IUniswapV2Pair uniToken = IUniswapV2Pair(stakingRewardContract.stakingToken());
+      uint256 quick = stakingRewardContract.balanceOf(_owner) * NEWQUICK.balanceOf(address(uniToken)) / uniToken.totalSupply();
+      balance_ += quick;
+    }
+    balance_ = balance_ / 1000;
+  }
+
+  function balanceOf(address _owner) external view returns (uint256 balance_) {
+     balance_ = getLPStakingQuick(_owner);
+  }
+
+}
+
+
+
+IStakingRewardsFactory constant NEWQUICKSRF = IStakingRewardsFactory(0xEDA776E7e1111BE5E82F9148B2deF870f99c1908);
+
+contract QuickswapVoting7 { 
+
+  function balanceOf(address _owner) external view returns (uint256 balance_) {
+    for(uint256 i; true; i++) {      
+      (bool success, bytes memory result) = address(NEWQUICKSRF).staticcall(abi.encodeWithSelector(IStakingRewardsFactory.rewardTokens.selector, i));
+      if(success == true) {
+        address rewardTokenAddress = abi.decode(result, (address));
+        StakingRewardsInfo memory stakingRewardsInfo = NEWQUICKSRF.stakingRewardsInfoByRewardToken(rewardTokenAddress);
+        balance_ += IERC20(stakingRewardsInfo.stakingRewards).balanceOf(_owner);        
+      }
+      else {
+        break;
+      }      
+    }
+    balance_ = balance_ / 1000;
+  }
 }
