@@ -1,31 +1,41 @@
 {
-  "name": "contracts-starter",
+  "name": "quickswap-voting",
   "version": "1.0.0",
-  "description": "Template for contract projects.",
-  "main": "index.js",
+  "description": "Snapshot voting wrapper contracts for QuickSwap.",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "hardhat test",
+    "test:ci": "hardhat test --bail",
+    "typecheck": "tsc --noEmit",
+    "audit": "pnpm audit --audit-level=moderate",
+    "baseline:capture": "tsx test/capture-baseline.ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mudgen/contracts-starter.git"
+    "url": "git+https://github.com/QuickSwap/quickswap-voting.git"
   },
-  "author": "Nick Mudge",
+  "author": "QuickSwap",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mudgen/contracts-starter/issues"
+    "url": "https://github.com/QuickSwap/quickswap-voting/issues"
   },
-  "homepage": "https://github.com/mudgen/contracts-starter#readme",
+  "homepage": "https://github.com/QuickSwap/quickswap-voting#readme",
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@nomiclabs/hardhat-waffle": "^2.0.1",
-    "chai": "^4.3.4",
-    "dotenv": "^8.6.0",
-    "ethereum-waffle": "^3.4.0",
-    "ethers": "^5.4.1",
-    "hardhat": "^2.4.1",
-    "prettier": "^2.3.2",
-    "prettier-plugin-solidity": "^1.0.0-beta.13",
-    "standard": "^16.0.3"
+    "@nomicfoundation/hardhat-network-helpers": "^3.0.3",
+    "@nomicfoundation/hardhat-node-test-runner": "^3.0.8",
+    "@nomicfoundation/hardhat-viem": "^3.0.1",
+    "@nomicfoundation/hardhat-viem-assertions": "^3.0.4",
+    "@types/node": "^25.0.0",
+    "dotenv": "16.4.5",
+    "hardhat": "3.1.0",
+    "prettier": "3.4.2",
+    "prettier-plugin-solidity": "1.4.3",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "viem": "^2.41.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": []
   }
 }

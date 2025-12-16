@@ -1,0 +1,55 @@
+{
+  "chains": {
+    "polygon": {
+      "chainId": 137,
+      "name": "Polygon PoS",
+      "rpcEnvVar": "POLYGON_RPC",
+      "defaultRpc": "https://polygon-rpc.com",
+      "tokens": {
+        "QUICK": "0xB5C064F955D8e7F38fE0460C556a72987494eE17"
+      },
+      "contracts": {
+        "dragonLair": "0x958d208Cdf087843e9AD98d23823d32E17d723A1",
+        "nonfungiblePositionManager": "0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6",
+        "farmingCenter": "0x7F281A8cdF66eF5e9db8434Ec6D97acc1bc01E78",
+        "poolDeployer": "0x2D98E2FA9da15aa6dC9581AB097Ced7af697CB92"
+      },
+      "wrappers": {
+        "voting8": {
+          "address": "0x7c87a471abd9bf56d41c752ab7c1b5de91d8dda6",
+          "description": "wallet QUICK + DragonLair QUICKBalance"
+        },
+        "voting10": {
+          "address": "0x59bcc928c513a6a872b7365511ed2a458c4f5d92",
+          "description": "NEWQUICKSRF staking pools aggregate"
+        },
+        "v3Pools1": {
+          "address": "0x2fcb66504ea8ee541176662939ef0c53e95c4a19",
+          "description": "Algebra V3 positions + FarmingCenter L2 NFT"
+        }
+      }
+    },
+    "base": {
+      "chainId": 8453,
+      "name": "Base",
+      "rpcEnvVar": "BASE_RPC",
+      "defaultRpc": "https://mainnet.base.org",
+      "tokens": {
+        "QUICK": "0x7094c27f342DBAdfbbeD005b219431595E33b305"
+      },
+      "contracts": {},
+      "wrappers": {}
+    },
+    "ethereum": {
+      "chainId": 1,
+      "name": "Ethereum Mainnet",
+      "rpcEnvVar": "ETH_RPC",
+      "defaultRpc": "https://eth.llamarpc.com",
+      "tokens": {
+        "QUICK": "0xd2bA23dE8a19316A638dc1e7a9ADdA1d74233368"
+      },
+      "contracts": {},
+      "wrappers": {}
+    }
+  }
+}

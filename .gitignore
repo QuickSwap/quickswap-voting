@@ -1,6 +1,52 @@
-node_modules
+# Dependencies
+node_modules/
+.pnpm-store/
 
-#Hardhat files
-cache
-artifacts
+# Hardhat
+artifacts/
+cache/
+typechain/
+typechain-types/
+types/
+
+# Environment
 .env
+.env.local
+.env.*.local
+
+# Keystores (encrypted private keys)
+keystores/
+*.keystore
+*.json.keystore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+*.tsbuildinfo
+
+# Deployments (keep history.json and frontend configs only)
+deployments/history.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage
+coverage/
+coverage.json
+
+# Test artifacts (keep baseline-latest.json, ignore timestamped copies)
+test/baselines/baseline-*-*.json
+!test/baselines/baseline-latest.json

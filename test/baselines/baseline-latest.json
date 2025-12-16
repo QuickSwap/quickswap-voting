@@ -1,0 +1,188 @@
+{
+  "capturedAt": "2025-12-17T22:05:14.789Z",
+  "block": 80438700,
+  "rpc": "https://polygon-rpc.com",
+  "wrappers": {
+    "voting8": "0x7c87a471abd9bf56d41c752ab7c1b5de91d8dda6",
+    "voting10": "0x59bcc928c513a6a872b7365511ed2a458c4f5d92",
+    "v3Pools1": "0x2fcb66504ea8ee541176662939ef0c53e95c4a19"
+  },
+  "wallets": [
+    {
+      "address": "0x7106b08ffd3d89794f3ec7bbf56bbba7790d71d6",
+      "label": "wallet-quick-holder",
+      "expectedSources": [
+        "walletQUICK"
+      ],
+      "scores": {
+        "voting8": {
+          "raw": "1521713662152420727779972",
+          "formatted": "1521713.662152420727779972"
+        },
+        "voting10": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "v3Pools1": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "total": {
+          "raw": "1521713662152420727779972",
+          "formatted": "1521713.662152420727779972"
+        }
+      }
+    },
+    {
+      "address": "0xbd87bb16d1a3423a38aa0b3d21021083ef643db3",
+      "label": "staked-dquick",
+      "expectedSources": [
+        "dQUICK"
+      ],
+      "scores": {
+        "voting8": {
+          "raw": "1078191627594167359735843",
+          "formatted": "1078191.627594167359735843"
+        },
+        "voting10": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "v3Pools1": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "total": {
+          "raw": "1078191627594167359735843",
+          "formatted": "1078191.627594167359735843"
+        }
+      }
+    },
+    {
+      "address": "0x3f2E26B8c7527E0667116063C5eB425bc82362e3",
+      "label": "staked-dquick-2",
+      "expectedSources": [
+        "dQUICK"
+      ],
+      "scores": {
+        "voting8": {
+          "raw": "1022502870785566344570261",
+          "formatted": "1022502.870785566344570261"
+        },
+        "voting10": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "v3Pools1": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "total": {
+          "raw": "1022502870785566344570261",
+          "formatted": "1022502.870785566344570261"
+        }
+      }
+    },
+    {
+      "address": "0x4d26f0e78c154f8fda7acf6646246fa135507017",
+      "label": "wallet-quick-holder-2",
+      "expectedSources": [
+        "walletQUICK"
+      ],
+      "scores": {
+        "voting8": {
+          "raw": "649829376505391562133142",
+          "formatted": "649829.376505391562133142"
+        },
+        "voting10": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "v3Pools1": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "total": {
+          "raw": "649829376505391562133142",
+          "formatted": "649829.376505391562133142"
+        }
+      }
+    },
+    {
+      "address": "0xcd107eca2e99aac18a6bcc830c07c703dc5044d4",
+      "label": "dquick-holder",
+      "expectedSources": [
+        "dQUICK"
+      ],
+      "scores": {
+        "voting8": {
+          "raw": "164686524508990417129715",
+          "formatted": "164686.524508990417129715"
+        },
+        "voting10": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "v3Pools1": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "total": {
+          "raw": "164686524508990417129715",
+          "formatted": "164686.524508990417129715"
+        }
+      }
+    },
+    {
+      "address": "0x66Bf0d32cb0AC017f4629eE77895410a0b911Ef7",
+      "label": "pools-holder",
+      "expectedSources": [
+        "v3Pools"
+      ],
+      "scores": {
+        "voting8": {
+          "raw": "18438058058342142152",
+          "formatted": "18.438058058342142152"
+        },
+        "voting10": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "v3Pools1": {
+          "raw": "15035271723431660341351",
+          "formatted": "15035.271723431660341351"
+        },
+        "total": {
+          "raw": "15053709781490002483503",
+          "formatted": "15053.709781490002483503"
+        }
+      }
+    },
+    {
+      "address": "0x8e29facd52fdb0e4a4addc08c601127535a364a4",
+      "label": "multi-source-holder",
+      "expectedSources": [
+        "dQUICK",
+        "syrup"
+      ],
+      "scores": {
+        "voting8": {
+          "raw": "314284794206984731060",
+          "formatted": "314.28479420698473106"
+        },
+        "voting10": {
+          "raw": "252933972050577704",
+          "formatted": "0.252933972050577704"
+        },
+        "v3Pools1": {
+          "raw": "0",
+          "formatted": "0"
+        },
+        "total": {
+          "raw": "314537728179035308764",
+          "formatted": "314.537728179035308764"
+        }
+      }
+    }
+  ]
+}
