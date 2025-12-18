@@ -8,7 +8,8 @@
     "test:ci": "hardhat test --bail",
     "typecheck": "tsc --noEmit",
     "audit": "pnpm audit --audit-level=moderate",
-    "baseline:capture": "tsx test/capture-baseline.ts"
+    "baseline:capture": "tsx scripts/capture-baseline.ts",
+    "monitor:limits": "tsx scripts/monitor-pool-limits.ts"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,7 @@
   },
   "homepage": "https://github.com/QuickSwap/quickswap-voting#readme",
   "devDependencies": {
+    "@ethereumjs/wallet": "^10.0.0",
     "@nomicfoundation/hardhat-network-helpers": "^3.0.3",
     "@nomicfoundation/hardhat-node-test-runner": "^3.0.8",
     "@nomicfoundation/hardhat-viem": "^3.0.1",

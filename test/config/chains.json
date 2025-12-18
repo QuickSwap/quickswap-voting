@@ -37,13 +37,17 @@
       "tokens": {
         "QUICK": "0x7094c27f342DBAdfbbeD005b219431595E33b305"
       },
-      "contracts": {},
+      "contracts": {
+        "nonfungiblePositionManager": "0x84715977598247125C3D6E2e85370d1F6fDA1eaF",
+        "factory": "0xC5396866754799B9720125B104AE01d935Ab9C7b",
+        "poolDeployer": "0xE08026Fd8537d67C501199610c42D08bB34eAa75"
+      },
       "wrappers": {}
     },
     "ethereum": {
       "chainId": 1,
       "name": "Ethereum Mainnet",
-      "rpcEnvVar": "ETH_RPC",
+      "rpcEnvVar": "ETHEREUM_RPC",
       "defaultRpc": "https://eth.llamarpc.com",
       "tokens": {
         "QUICK": "0xd2bA23dE8a19316A638dc1e7a9ADdA1d74233368"

@@ -1,0 +1,39 @@
+flowchart TB
+    subgraph Snapshot["Snapshot Space"]
+        S1["erc20-balance-of<br/>Polygon (137)"]
+        S2["erc20-balance-of<br/>Base (8453)"]
+        S3["erc20-balance-of<br/>Ethereum (1)"]
+    end
+
+    subgraph Polygon["Polygon Aggregator"]
+        PA[PolygonAggregator]
+        M1[WalletAndDQuickModule]
+        M2[SyrupStakingModule]
+        M3[AlgebraV3Module]
+        M4[GammaVaultsModule]
+        M5[V2LPStakingModule]
+    end
+
+    subgraph Base["Base Aggregator"]
+        BA[BaseAggregator]
+        M6[WalletQuickModule]
+        M7[AlgebraIntegralModule]
+        M8[GammaVaultsModule]
+        M9[V2LPStakingModule]
+    end
+
+    S1 --> PA
+    S2 --> BA
+    S3 --> QUICK_ETH[QUICK Token]
+
+    PA --> M1
+    PA --> M2
+    PA --> M3
+    PA --> M4
+    PA --> M5
+
+    BA --> M6
+    BA --> M7
+    BA --> M8
+    BA --> M9
+
