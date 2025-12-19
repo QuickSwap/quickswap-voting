@@ -22,7 +22,7 @@ const TEST_DIR = path.join(__dirname, "..", "test");
 
 // Load configs
 const CHAINS_CONFIG = JSON.parse(
-  fs.readFileSync(path.join(TEST_DIR, "config/chains.json"), "utf8")
+  fs.readFileSync(path.join(__dirname, "..", "config", "chains.json"), "utf8")
 ).chains as ChainsConfig;
 
 const TEST_WALLETS = JSON.parse(

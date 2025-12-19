@@ -1,53 +1,71 @@
-# Snapshot Strategy Tests
+# Voting Module Tests
 
-Validation tools for Snapshot voting wrappers.
+Validation tests for Snapshot voting wrappers and modules.
 
 ## Quick Start
 
 ```bash
-# Sanity checks (CI/CD)
+# Run all tests
 pnpm test
 
-# Capture baseline (before developing new wrappers)
+# Capture baseline scores for parity testing
 POLYGON_RPC=https://your-rpc.com pnpm run baseline:capture
-
-# Single wallet check
-POLYGON_RPC=https://your-rpc.com \
-pnpm run baseline:polygon -- \
-  0x7106b08ffd3d89794f3ec7bbf56bbba7790d71d6 \
-  80438700
 ```
 
-## Understanding the Tests
+## Test Files
 
-**Hardhat tests (`pnpm test`)**:
-- ✅ Non-reverting checks
-- ✅ Expected sources have balance > 0
-- ❌ Does NOT compare exact values (no baseline comparison)
+| File | Purpose |
+|------|---------|
+| `snapshot-strategies.test.ts` | Validates existing Polygon wrappers (Voting8, Voting10, V3Pools1) |
+| `parity.test.ts` | Verifies modular components match legacy wrappers |
+| `algebra-integral.test.ts` | Tests AlgebraIntegralV4Module for Base/Somnia |
 
-**Baseline capture (`pnpm run baseline:capture`)**:
-- Saves scores of all test wallets to JSON
-- Use for parity checks when deploying new wrappers
+## Test Wallets
 
-**📚 Full workflow**: See `docs.no-commit/snapshot/VALIDATION-WORKFLOW.md`
+Test wallets are configured in `config/test-wallets.json` with expected sources:
 
-## Validation Workflow
+| Label | Chain | Sources |
+|-------|-------|---------|
+| `wallet-quick-holder` | Polygon | walletQUICK |
+| `staked-dquick` | Polygon | dQUICK |
+| `pools-holder` | Polygon | v3Pools |
+| `multi-source-holder` | Polygon | dQUICK, syrup |
+| `base-holder` | Base | walletQUICK |
+| `mainnet-holder` | Ethereum | walletQUICK |
 
-### 1. Test in Snapshot Playground
+## Configuration Files
 
-Go to https://v1.snapshot.box/#/playground/erc20-balance-of
+```
+test/
+├── config/
+│   └── test-wallets.json     # Test wallets with expected sources
+├── fixtures/
+│   └── blocks.json           # Fixed blocks for deterministic tests
+└── baselines/
+    └── baseline-latest.json  # Captured scores for parity checks
+```
 
-**Strategy configs** (use these for each wrapper):
+Core chain config is in `../config/chains.json`.
 
+## Snapshot Playground Validation
+
+Test wrappers in the Snapshot playground before deployment:
+
+**URL**: https://v1.snapshot.box/#/playground/erc20-balance-of
+
+### Strategy Configs
+
+**Voting8** (wallet + dQUICK):
 ```json
-// Voting8 (wallet + dQUICK)
 {
   "address": "0x7c87a471abd9bf56d41c752ab7c1b5de91d8dda6",
   "symbol": "QUICK",
   "decimals": 18
 }
+```
 
-// V3Pools1 (v3 positions)
+**V3Pools1** (v3 positions):
+```json
 {
   "address": "0x2fcb66504ea8ee541176662939ef0c53e95c4a19",
   "symbol": "QUICK",
@@ -55,7 +73,7 @@ Go to https://v1.snapshot.box/#/playground/erc20-balance-of
 }
 ```
 
-For **Voting10** use `pagination` strategy wrapping `erc20-balance-of`:
+**Voting10** (syrup staking) - use `pagination` strategy:
 ```json
 {
   "symbol": "QUICK",
@@ -69,29 +87,12 @@ For **Voting10** use `pagination` strategy wrapping `erc20-balance-of`:
 }
 ```
 
-Test wallets from `config/test-wallets.json`, block `80438700`
+## Environment Variables
 
-### 2. Compare with Local Script
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `POLYGON_RPC` | Polygon RPC endpoint | `https://polygon-rpc.com` |
+| `BASE_RPC` | Base RPC endpoint | `https://mainnet.base.org` |
+| `ETHEREUM_RPC` | Ethereum RPC endpoint | `https://eth.llamarpc.com` |
 
-```bash
-# Same wallet, same block
-POLYGON_RPC=... node docs.no-commit/snapshot/score-strategies.mjs \
-  0x7106b08ffd3d89794f3ec7bbf56bbba7790d71d6 \
-  80438700
-
-# Should match Snapshot playground ✅
-```
-
-### 3. Deploy New Wrappers
-
-Update `config/chains.json` with new addresses
-
-### 4. Test New Wrappers
-
-Repeat steps 1-2 with new addresses, compare totals
-
-## Configuration
-
-- `config/test-wallets.json` - Test wallets with expected sources
-- `config/chains.json` - Chain configs + wrapper addresses  
-- `fixtures/blocks.json` - Fixed blocks for deterministic tests
+**Note**: Public RPCs may rate-limit. Use private RPCs for reliable testing.

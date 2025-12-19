@@ -19,7 +19,7 @@ const BLOCKS = JSON.parse(
 ).blocks;
 
 const CHAINS_CONFIG = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "config/chains.json"), "utf8")
+  fs.readFileSync(path.join(__dirname, "..", "config", "chains.json"), "utf8")
 ).chains;
 
 const TEST_WALLETS = JSON.parse(

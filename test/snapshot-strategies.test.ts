@@ -18,7 +18,7 @@ const TEST_WALLETS = JSON.parse(
 ).wallets as TestWallet[];
 
 const CHAINS_CONFIG = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "config/chains.json"), "utf8")
+  fs.readFileSync(path.join(__dirname, "..", "config", "chains.json"), "utf8")
 ).chains as ChainsConfig;
 
 const ABI_BALANCE_OF = [

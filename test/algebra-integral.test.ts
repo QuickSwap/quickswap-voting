@@ -1,7 +1,7 @@
 /**
  * Algebra Integral Module Tests
  * 
- * Tests for AlgebraIntegralModule which counts QUICK in Algebra v4 positions
+ * Tests for AlgebraIntegralV4Module which counts QUICK in Algebra v4 positions
  * on Base, Somnia, and future Algebra Integral deployments.
  */
 import assert from "node:assert/strict";
@@ -16,7 +16,7 @@ import type { ChainsConfig, BlockNumbers } from "./types.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const CHAINS_CONFIG = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "config/chains.json"), "utf8")
+  fs.readFileSync(path.join(__dirname, "..", "config", "chains.json"), "utf8")
 ).chains as ChainsConfig;
 
 const BLOCKS = JSON.parse(
@@ -222,7 +222,7 @@ describe("Algebra Integral Module (Base)", async () => {
   });
 
   describe("Integration: Simulated Module Behavior", async () => {
-    // This simulates what AlgebraIntegralModule.balanceOf() would do
+    // This simulates what AlgebraIntegralV4Module.balanceOf() would do
     // Uses withRetry for rate limit handling
     
     async function simulateModuleBalanceOf(account: Address): Promise<bigint> {

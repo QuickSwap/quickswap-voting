@@ -4,14 +4,9 @@ pragma solidity ^0.8.11;
 import "../interfaces/IVotingModule.sol";
 
 /**
- * @title AlgebraIntegralModule
- * @notice Counts QUICK in Algebra Integral (v4) liquidity positions
- * @dev Compatible with Base, Somnia, and future Algebra Integral deployments
- * 
- * Key differences from AlgebraV3Module:
- * - positions() returns `deployer` field (12 fields vs 11)
- * - Uses factory.poolByPair() instead of poolDeployer.getPool()
- * - FarmingCenter is integrated in PositionManager (tokenFarmedIn mapping)
+ * @title AlgebraIntegralV4Module
+ * @notice Counts QUICK in Algebra Integral v4 liquidity positions
+ * @dev Compatible with Base, Somnia, and future Algebra v4 deployments
  */
 
 interface IERC20 {
@@ -51,7 +46,7 @@ interface IAlgebraPool {
     function liquidity() external view returns (uint128);
 }
 
-contract AlgebraIntegralModule is IVotingModule {
+contract AlgebraIntegralV4Module is IVotingModule {
     
     /// @notice Max NFTs to enumerate per user (gas protection)
     uint256 public constant MAX_NFTS_PER_USER = 100;

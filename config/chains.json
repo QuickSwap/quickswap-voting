@@ -12,7 +12,15 @@
         "dragonLair": "0x958d208Cdf087843e9AD98d23823d32E17d723A1",
         "nonfungiblePositionManager": "0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6",
         "farmingCenter": "0x7F281A8cdF66eF5e9db8434Ec6D97acc1bc01E78",
-        "poolDeployer": "0x2D98E2FA9da15aa6dC9581AB097Ced7af697CB92"
+        "poolDeployer": "0x2D98E2FA9da15aa6dC9581AB097Ced7af697CB92",
+        "syrupFactory": "0xEDA776E7e1111BE5E82F9148B2deF870f99c1908"
+      },
+      "modules": {
+        "walletAndDQuick": true,
+        "syrupStaking": true,
+        "algebraV3": true,
+        "liquidityManagers": true,
+        "v2LPStaking": true
       },
       "wrappers": {
         "voting8": {
@@ -42,6 +50,13 @@
         "factory": "0xC5396866754799B9720125B104AE01d935Ab9C7b",
         "poolDeployer": "0xE08026Fd8537d67C501199610c42D08bB34eAa75"
       },
+      "modules": {
+        "walletQuick": true,
+        "syrupStaking": false,
+        "algebraIntegralV4": true,
+        "liquidityManagers": true,
+        "v2LPStaking": true
+      },
       "wrappers": {}
     },
     "ethereum": {
@@ -53,7 +68,25 @@
         "QUICK": "0xd2bA23dE8a19316A638dc1e7a9ADdA1d74233368"
       },
       "contracts": {},
+      "modules": {
+        "walletQuick": true
+      },
       "wrappers": {}
+    },
+    "manta": {
+      "chainId": 169,
+      "name": "Manta Pacific",
+      "rpcEnvVar": "MANTA_RPC",
+      "defaultRpc": "https://pacific-rpc.manta.network/http",
+      "tokens": {
+        "QUICK": ""
+      },
+      "contracts": {},
+      "modules": {
+        "walletQuick": true
+      },
+      "wrappers": {},
+      "_comment": "QUICK token address TBD - update before deployment"
     }
   }
 }
