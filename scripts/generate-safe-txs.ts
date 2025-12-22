@@ -54,6 +54,10 @@ interface SafeTransaction {
 
 function findLatestDeployment(chain: string = "polygon"): string {
   const deploymentsDir = path.join(__dirname, "..", "deployments");
+  const stable = path.join(deploymentsDir, `${chain}-latest.json`);
+  if (fs.existsSync(stable)) {
+    return stable;
+  }
   const files = fs.readdirSync(deploymentsDir)
     .filter(f => f.startsWith(`${chain}-`) && f.endsWith('.json'))
     .sort()

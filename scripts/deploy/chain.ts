@@ -285,19 +285,30 @@ async function main() {
   fs.mkdirSync(outputDir, { recursive: true });
   
   const outputFile = path.join(outputDir, `${chainKey}-${Date.now()}.json`);
-  fs.writeFileSync(outputFile, JSON.stringify({
+  const payload = {
     chain: chainKey,
     chainId: config.chainId,
     deployer: deployerAccount.address,
     owner: OWNER_ADDRESS,
     deployedAt: new Date().toISOString(),
     contracts: Object.fromEntries(
-      Object.entries(deployed).map(([k, v]) => [k, { address: v.address, name: v.name }])
+      Object.entries(deployed).map(([k, v]) => [
+        k,
+        { address: v.address, name: v.name, args: v.args },
+      ])
     ),
     modulesEnabled: modules,
-  }, null, 2));
+  };
+
+  fs.writeFileSync(outputFile, JSON.stringify(payload, null, 2));
   
   console.log(`\n✅ Saved: ${outputFile}`);
+
+  // Also write a stable "latest" file per chain for clean production ops.
+  // This file is intended to be the single source of truth for the last deployment.
+  const latestFile = path.join(outputDir, `${chainKey}-latest.json`);
+  fs.writeFileSync(latestFile, JSON.stringify(payload, null, 2));
+  console.log(`✅ Updated: ${latestFile}`);
   
   // Next steps
   const mainContract = deployed.aggregator?.address || Object.values(deployed)[0]?.address;
