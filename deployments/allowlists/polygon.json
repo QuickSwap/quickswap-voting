@@ -1,0 +1,21 @@
+{
+  "chain": "polygon",
+  "chainId": 137,
+  "updatedAt": "2025-12-19",
+  "almVaults": {
+    "description": "ALM vaults (Gamma/Steer/ICHI) containing QUICK",
+    "source": "interface-v3 GammaPairs filtered for QUICK",
+    "addresses": []
+  },
+  "v2StakingPools": {
+    "description": "V2 LP staking pools with QUICK",
+    "source": "quickswap-default-stake-list lpfarms filtered for QUICK",
+    "addresses": []
+  },
+  "syrupLegacyPools": {
+    "description": "Legacy syrup pools not in the new factory",
+    "source": "Manual curation from Voting10 wrapper analysis",
+    "addresses": []
+  }
+}
+

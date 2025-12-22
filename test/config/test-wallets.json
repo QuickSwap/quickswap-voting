@@ -1,0 +1,74 @@
+{
+  "wallets": [
+    {
+      "address": "0x7106b08ffd3d89794f3ec7bbf56bbba7790d71d6",
+      "label": "wallet-quick-holder",
+      "expectedSources": {
+        "polygon": ["walletQUICK"]
+      }
+    },
+    {
+      "address": "0xbd87bb16d1a3423a38aa0b3d21021083ef643db3",
+      "label": "staked-dquick",
+      "expectedSources": {
+        "polygon": ["dQUICK"]
+      }
+    },
+    {
+      "address": "0x3f2E26B8c7527E0667116063C5eB425bc82362e3",
+      "label": "staked-dquick-2",
+      "expectedSources": {
+        "polygon": ["dQUICK"]
+      }
+    },
+    {
+      "address": "0x4d26f0e78c154f8fda7acf6646246fa135507017",
+      "label": "wallet-quick-holder-2",
+      "expectedSources": {
+        "polygon": ["walletQUICK"]
+      }
+    },
+    {
+      "address": "0xcd107eca2e99aac18a6bcc830c07c703dc5044d4",
+      "label": "dquick-holder",
+      "expectedSources": {
+        "polygon": ["dQUICK"]
+      }
+    },
+    {
+      "address": "0x66Bf0d32cb0AC017f4629eE77895410a0b911Ef7",
+      "label": "pools-holder",
+      "expectedSources": {
+        "polygon": ["v3Pools"]
+      }
+    },
+    {
+      "address": "0x451ff8ecD1dd92017e70454f3120fada936f73A3",
+      "label": "base-holder",
+      "expectedSources": {
+        "base": ["walletQUICK"]
+      }
+    },
+    {
+      "address": "0xbe50cc9cf0905cac4f8f8453bb6c9798898658bd",
+      "label": "mainnet-holder",
+      "expectedSources": {
+        "ethereum": ["walletQUICK"]
+      }
+    },
+    {
+      "address": "0xDB190af1C25C74Afd3B8cF1aC178dC06C2D4a2D6",
+      "label": "mainnet-holder-2",
+      "expectedSources": {
+        "ethereum": ["walletQUICK"]
+      }
+    },
+    {
+      "address": "0x8e29facd52fdb0e4a4addc08c601127535a364a4",
+      "label": "multi-source-holder",
+      "expectedSources": {
+        "polygon": ["dQUICK", "syrup"]
+      }
+    }
+  ]
+}

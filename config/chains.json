@@ -1,0 +1,92 @@
+{
+  "chains": {
+    "polygon": {
+      "chainId": 137,
+      "name": "Polygon PoS",
+      "rpcEnvVar": "POLYGON_RPC",
+      "defaultRpc": "https://polygon-rpc.com",
+      "tokens": {
+        "QUICK": "0xB5C064F955D8e7F38fE0460C556a72987494eE17"
+      },
+      "contracts": {
+        "dragonLair": "0x958d208Cdf087843e9AD98d23823d32E17d723A1",
+        "nonfungiblePositionManager": "0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6",
+        "farmingCenter": "0x7F281A8cdF66eF5e9db8434Ec6D97acc1bc01E78",
+        "poolDeployer": "0x2D98E2FA9da15aa6dC9581AB097Ced7af697CB92",
+        "syrupFactory": "0xEDA776E7e1111BE5E82F9148B2deF870f99c1908"
+      },
+      "modules": {
+        "walletAndDQuick": true,
+        "syrupStaking": true,
+        "algebraV3": true,
+        "liquidityManagers": true,
+        "v2LPStaking": true
+      },
+      "wrappers": {
+        "voting8": {
+          "address": "0x7c87a471abd9bf56d41c752ab7c1b5de91d8dda6",
+          "description": "wallet QUICK + DragonLair QUICKBalance"
+        },
+        "voting10": {
+          "address": "0x59bcc928c513a6a872b7365511ed2a458c4f5d92",
+          "description": "NEWQUICKSRF staking pools aggregate"
+        },
+        "v3Pools1": {
+          "address": "0x2fcb66504ea8ee541176662939ef0c53e95c4a19",
+          "description": "Algebra V3 positions + FarmingCenter L2 NFT"
+        }
+      }
+    },
+    "base": {
+      "chainId": 8453,
+      "name": "Base",
+      "rpcEnvVar": "BASE_RPC",
+      "defaultRpc": "https://mainnet.base.org",
+      "tokens": {
+        "QUICK": "0x7094c27f342DBAdfbbeD005b219431595E33b305"
+      },
+      "contracts": {
+        "nonfungiblePositionManager": "0x84715977598247125C3D6E2e85370d1F6fDA1eaF",
+        "factory": "0xC5396866754799B9720125B104AE01d935Ab9C7b",
+        "poolDeployer": "0xE08026Fd8537d67C501199610c42D08bB34eAa75"
+      },
+      "modules": {
+        "walletQuick": true,
+        "syrupStaking": false,
+        "algebraIntegralV4": true,
+        "liquidityManagers": true,
+        "v2LPStaking": true
+      },
+      "wrappers": {}
+    },
+    "ethereum": {
+      "chainId": 1,
+      "name": "Ethereum Mainnet",
+      "rpcEnvVar": "ETHEREUM_RPC",
+      "defaultRpc": "https://eth.llamarpc.com",
+      "tokens": {
+        "QUICK": "0xd2bA23dE8a19316A638dc1e7a9ADdA1d74233368"
+      },
+      "contracts": {},
+      "modules": {
+        "walletQuick": true
+      },
+      "wrappers": {}
+    },
+    "manta": {
+      "chainId": 169,
+      "name": "Manta Pacific",
+      "rpcEnvVar": "MANTA_RPC",
+      "defaultRpc": "https://pacific-rpc.manta.network/http",
+      "tokens": {
+        "QUICK": ""
+      },
+      "contracts": {},
+      "modules": {
+        "walletQuick": true
+      },
+      "wrappers": {},
+      "_comment": "QUICK token address TBD - update before deployment"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+flowchart TB
+    subgraph Sources["QUICK Voting Power Sources"]
+        subgraph Polygon["Polygon PoS"]
+            P1[Wallet QUICK]
+            P2[dQUICK]
+            P3[Syrup Pools]
+            P4[Algebra V3 LP]
+            P5[ALM Vaults]
+            P6[V2 LP Staking]
+        end
+
+        subgraph Base["Base"]
+            B1[Wallet QUICK]
+            B2[Algebra V4 LP]
+            B3[ALM Vaults]
+            B4[V2 LP Staking]
+        end
+
+        subgraph Ethereum["Ethereum"]
+            E1[Wallet QUICK]
+        end
+
+        subgraph Manta["Manta"]
+            M1[Wallet QUICK]
+        end
+    end

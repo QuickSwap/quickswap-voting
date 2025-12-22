@@ -1,0 +1,33 @@
+flowchart LR
+    subgraph User["User Query"]
+        U[balanceOf]
+    end
+
+    subgraph Aggregator["Aggregator"]
+        A[PolygonAggregator]
+    end
+
+    subgraph Modules["Voting Modules"]
+        M1[Wallet + dQUICK]
+        M2[Syrup Pools]
+        M3[V3 Positions]
+        M4[ALM Vaults]
+        M5[V2 LP Staking]
+    end
+
+    subgraph Result["Result"]
+        R[Total QUICK<br/>Voting Power]
+    end
+
+    U --> A
+    A --> M1
+    A --> M2
+    A --> M3
+    A --> M4
+    A --> M5
+    M1 --> R
+    M2 --> R
+    M3 --> R
+    M4 --> R
+    M5 --> R
+
