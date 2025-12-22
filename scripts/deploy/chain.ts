@@ -8,7 +8,10 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { type Address, formatEther } from "viem";
+import { type Address, createWalletClient, formatEther, http } from "viem";
+import { polygon, mainnet, base, manta } from "viem/chains";
+import hre from "hardhat";
+import type { DeployContractConfig, WalletClient } from "@nomicfoundation/hardhat-viem/types";
 import {
   deployWalletQuickModule,
   deployWalletAndDQuickModule,
@@ -23,9 +26,15 @@ import {
   type DeployResult,
 } from "./deployers.js";
 
-const hre = await import("hardhat");
-const viem = (hre as any).viem;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Map network names to viem chains (required for hardhat-viem)
+const CHAIN_MAP = {
+  polygon,
+  ethereum: mainnet,
+  base,
+  manta
+} as const;
 
 const CHAINS_CONFIG = JSON.parse(
   fs.readFileSync(path.join(__dirname, "..", "..", "config", "chains.json"), "utf8")
@@ -34,23 +43,34 @@ const CHAINS_CONFIG = JSON.parse(
 const OWNER_ADDRESS = (process.env.OWNER_ADDRESS || "0xDA1077c4b0dd6da1BDF166F30aa4BDbF517d637b") as Address;
 
 function getChainConfig(): { chainKey: string; config: any } {
-  const networkName = (hre as any).network.name;
-  const networkChainId = (hre as any).network.config?.chainId;
+  // Get network name from command line args (--network <name>)
+  const networkArgIndex = process.argv.indexOf('--network');
+  const networkName = networkArgIndex !== -1 ? process.argv[networkArgIndex + 1] : undefined;
+  
+  if (!networkName) {
+    throw new Error(
+      `Network not specified. Use: --network <chain>\n` +
+      `Available: ${Object.keys(CHAINS_CONFIG).join(", ")}`
+    );
+  }
   
   // Try direct match first
   if (CHAINS_CONFIG[networkName]) {
     return { chainKey: networkName, config: CHAINS_CONFIG[networkName] };
   }
   
-  // Otherwise, find by chainId
-  for (const [key, config] of Object.entries(CHAINS_CONFIG) as [string, any][]) {
-    if (config.chainId === networkChainId) {
-      return { chainKey: key, config };
+  // Otherwise, try to find by chainId from hardhat config
+  const hardhatNetworkConfig = (hre.config as any).networks?.[networkName];
+  if (hardhatNetworkConfig?.chainId) {
+    for (const [key, config] of Object.entries(CHAINS_CONFIG) as [string, any][]) {
+      if (config.chainId === hardhatNetworkConfig.chainId) {
+        return { chainKey: key, config };
+      }
     }
   }
   
   throw new Error(
-    `Chain "${networkName}" (chainId: ${networkChainId}) not found in config/chains.json.\n` +
+    `Chain "${networkName}" not found in config/chains.json.\n` +
     `Available: ${Object.keys(CHAINS_CONFIG).join(", ")}`
   );
 }
@@ -75,15 +95,39 @@ async function main() {
   const { chainKey, config } = getChainConfig();
   const modules = config.modules || {};
   
-  const [deployer] = await viem.getWalletClients();
-  const publicClient = await viem.getPublicClient();
+  // Get viem chain definition (used for both hardhat-viem + direct viem clients)
+  const chain = CHAIN_MAP[chainKey as keyof typeof CHAIN_MAP];
+  if (!chain) {
+    throw new Error(`Chain ${chainKey} not found in CHAIN_MAP`);
+  }
+  
+  // Load deployer account from keystore
+  const { getAccount } = await import("../utils/keystore.js");
+  const deployerAccount = await getAccount();
+  
+  // Create a network connection and use its viem helpers.
+  // Note: hardhat-viem extends NetworkConnection (connection.viem), not the HRE object.
+  const connection = await hre.network.connect();
+  const hhViem = connection.viem;
+
+  // Resolve RPC URL from config/chains.json (single source of truth)
+  const rpcUrl = (process.env[config.rpcEnvVar] || config.defaultRpc) as string;
+  if (!rpcUrl) {
+    throw new Error(`Missing RPC URL for ${chainKey}. Set ${config.rpcEnvVar} or update config/chains.json`);
+  }
+
+  // Use explicit clients for deployments (keystore signer).
+  // hardhat-viem deployContract supports a client override.
+  const publicClient = await hhViem.getPublicClient({ chain, transport: http(rpcUrl) });
+  const walletClient = createWalletClient({ account: deployerAccount, chain, transport: http(rpcUrl) }) as unknown as WalletClient;
+  const deployConfig: DeployContractConfig = { client: { wallet: walletClient, public: publicClient } };
   
   console.log("🚀 Generic Chain Deployer");
   console.log(`   Chain:    ${config.name} (${config.chainId})`);
-  console.log(`   Deployer: ${deployer.account.address}`);
+  console.log(`   Deployer: ${deployerAccount.address}`);
   console.log(`   Owner:    ${OWNER_ADDRESS}`);
   
-  const balance = await publicClient.getBalance({ address: deployer.account.address });
+  const balance = await publicClient.getBalance({ address: deployerAccount.address });
   console.log(`   Balance:  ${formatEther(balance)} native`);
   console.log("");
   
@@ -110,15 +154,17 @@ async function main() {
   
   if (modules.walletQuick) {
     console.log("📦 Deploying WalletQuickModule...");
-    deployed.walletQuick = await deployWalletQuickModule(config.tokens.QUICK);
+    deployed.walletQuick = await deployWalletQuickModule(hhViem, config.tokens.QUICK, deployConfig);
     console.log(`   ✅ ${deployed.walletQuick.address}`);
   }
   
   if (modules.walletAndDQuick) {
     console.log("📦 Deploying WalletAndDQuickModule...");
     deployed.walletAndDQuick = await deployWalletAndDQuickModule(
+      hhViem,
       config.tokens.QUICK,
-      config.contracts.dragonLair
+      config.contracts.dragonLair,
+      deployConfig
     );
     console.log(`   ✅ ${deployed.walletAndDQuick.address}`);
   }
@@ -129,9 +175,11 @@ async function main() {
     
     console.log("📦 Deploying SyrupStakingModule...");
     deployed.syrupStaking = await deploySyrupStakingModule(
+      hhViem,
       OWNER_ADDRESS,
       factory,
-      legacyPools
+      legacyPools,
+      deployConfig
     );
     console.log(`   ✅ ${deployed.syrupStaking.address}`);
   }
@@ -139,10 +187,12 @@ async function main() {
   if (modules.algebraV3) {
     console.log("📦 Deploying AlgebraV3Module...");
     deployed.algebraV3 = await deployAlgebraV3Module(
+      hhViem,
       config.tokens.QUICK,
       config.contracts.nonfungiblePositionManager,
       config.contracts.farmingCenter,
-      config.contracts.poolDeployer
+      config.contracts.poolDeployer,
+      deployConfig
     );
     console.log(`   ✅ ${deployed.algebraV3.address}`);
   }
@@ -150,9 +200,11 @@ async function main() {
   if (modules.algebraIntegralV4) {
     console.log("📦 Deploying AlgebraIntegralV4Module...");
     deployed.algebraIntegralV4 = await deployAlgebraIntegralV4Module(
+      hhViem,
       config.tokens.QUICK,
       config.contracts.nonfungiblePositionManager,
-      config.contracts.factory
+      config.contracts.factory,
+      deployConfig
     );
     console.log(`   ✅ ${deployed.algebraIntegralV4.address}`);
   }
@@ -161,9 +213,11 @@ async function main() {
     const vaults = allowlists.liquidityManagers?.addresses || allowlists.almVaults?.addresses || [];
     console.log(`📦 Deploying LiquidityManagersModule (${vaults.length} vaults)...`);
     deployed.liquidityManagers = await deployLiquidityManagersModule(
+      hhViem,
       OWNER_ADDRESS,
       config.tokens.QUICK,
-      vaults
+      vaults,
+      deployConfig
     );
     console.log(`   ✅ ${deployed.liquidityManagers.address}`);
   }
@@ -172,9 +226,11 @@ async function main() {
     const pools = allowlists.v2StakingPools?.addresses || [];
     console.log(`📦 Deploying V2LPStakingModule (${pools.length} pools)...`);
     deployed.v2LPStaking = await deployV2LPStakingModule(
+      hhViem,
       OWNER_ADDRESS,
       config.tokens.QUICK,
-      pools
+      pools,
+      deployConfig
     );
     console.log(`   ✅ ${deployed.v2LPStaking.address}`);
   }
@@ -187,23 +243,27 @@ async function main() {
     if (chainKey === "polygon") {
       console.log("📦 Deploying PolygonAggregator...");
       deployed.aggregator = await deployPolygonAggregator(
+        hhViem,
         OWNER_ADDRESS,
         deployed.walletAndDQuick?.address || ZERO_ADDRESS,
         deployed.syrupStaking?.address || ZERO_ADDRESS,
         deployed.algebraV3?.address || ZERO_ADDRESS,
         deployed.liquidityManagers?.address || ZERO_ADDRESS,
-        deployed.v2LPStaking?.address || ZERO_ADDRESS
+        deployed.v2LPStaking?.address || ZERO_ADDRESS,
+        deployConfig
       );
       console.log(`   ✅ ${deployed.aggregator.address}`);
     } else if (chainKey === "base") {
       console.log("📦 Deploying BaseAggregator...");
       deployed.aggregator = await deployBaseAggregator(
+        hhViem,
         OWNER_ADDRESS,
         deployed.walletQuick?.address || ZERO_ADDRESS,
         deployed.syrupStaking?.address || ZERO_ADDRESS,
         deployed.algebraIntegralV4?.address || ZERO_ADDRESS,
         deployed.liquidityManagers?.address || ZERO_ADDRESS,
-        deployed.v2LPStaking?.address || ZERO_ADDRESS
+        deployed.v2LPStaking?.address || ZERO_ADDRESS,
+        deployConfig
       );
       console.log(`   ✅ ${deployed.aggregator.address}`);
     }
@@ -228,7 +288,7 @@ async function main() {
   fs.writeFileSync(outputFile, JSON.stringify({
     chain: chainKey,
     chainId: config.chainId,
-    deployer: deployer.account.address,
+    deployer: deployerAccount.address,
     owner: OWNER_ADDRESS,
     deployedAt: new Date().toISOString(),
     contracts: Object.fromEntries(

@@ -25,6 +25,7 @@
     "@ethereumjs/wallet": "^10.0.0",
     "@nomicfoundation/hardhat-network-helpers": "^3.0.3",
     "@nomicfoundation/hardhat-node-test-runner": "^3.0.8",
+    "@nomicfoundation/hardhat-verify": "^3.0.8",
     "@nomicfoundation/hardhat-viem": "^3.0.1",
     "@nomicfoundation/hardhat-viem-assertions": "^3.0.4",
     "@types/node": "^25.0.0",

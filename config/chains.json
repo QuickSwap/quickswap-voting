@@ -34,6 +34,17 @@
         "v3Pools1": {
           "address": "0x2fcb66504ea8ee541176662939ef0c53e95c4a19",
           "description": "Algebra V3 positions + FarmingCenter L2 NFT"
+        },
+        "polygonAggregator": {
+          "address": "0x3db49d6b783590966072ea02a5f8bb214a159d4e",
+          "description": "wallet+dQUICK + syrup + algebra v3 + ALM vaults + v2 staking",
+          "modules": {
+            "walletAndDQuick": "0x22729e385310f035b54866c270d9f0b2cf0b6d64",
+            "syrupStaking": "0x559781f2b6d8b9499626317d68858f99e45437be",
+            "algebraV3": "0xee6725f9136a91e3f631189960a2eec7208f62c8",
+            "liquidityManagers": "0xda13ca59c0806c6093cf07e6f29b379e31adc181",
+            "v2LPStaking": "0x4880c9ff216ae69cb1fc717575d824314ed862a9"
+          }
         }
       }
     },
