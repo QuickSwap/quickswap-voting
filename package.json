@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "audit": "pnpm audit --audit-level=moderate",
     "baseline:capture": "tsx scripts/capture-baseline.ts",
-    "monitor:limits": "tsx scripts/monitor-pool-limits.ts"
+    "monitor:limits": "tsx scripts/monitor-pool-limits.ts",
+    "verify:latest": "tsx scripts/verify-latest.ts"
   },
   "repository": {
     "type": "git",
