@@ -101,3 +101,116 @@ describe("Parity: Zero Address Safety", async () => {
   });
 });
 
+describe("Parity: AlgebraV3Module vs V3Pools1 (deployed)", async () => {
+  const algebraV3Path = path.join(__dirname, "..", "deployments", "polygon-algebraV3-latest.json");
+  if (!fs.existsSync(algebraV3Path)) {
+    it("polygon-algebraV3-latest.json missing (skipped)", () => assert.ok(true));
+    return;
+  }
+
+  const { contract } = JSON.parse(fs.readFileSync(algebraV3Path, "utf8"));
+  const algebraV3Address = contract.address as Address;
+
+  const client = createPublicClient({ chain: polygon, transport: http(getRpcUrl()) });
+  const poolsHolder = TEST_WALLETS.find((w: any) => w.label === "pools-holder");
+  
+  if (!poolsHolder) {
+    it("pools-holder wallet not found (skipped)", () => assert.ok(true));
+    return;
+  }
+
+  it(`pools-holder: AlgebraV3Module matches V3Pools1 (±1%)`, async () => {
+    // Use current block since AlgebraV3Module is recently deployed
+    const blockNumber = await client.getBlockNumber();
+    
+    const [legacy, newModule] = await Promise.all([
+      client.readContract({
+        address: POLYGON.V3POOLS1, abi: BALANCE_OF_ABI,
+        functionName: "balanceOf", args: [poolsHolder.address as Address], blockNumber,
+      }),
+      client.readContract({
+        address: algebraV3Address, abi: BALANCE_OF_ABI,
+        functionName: "balanceOf", args: [poolsHolder.address as Address], blockNumber,
+      }),
+    ]);
+
+    // Allow 1% tolerance for minor calculation differences
+    const diff = legacy > newModule ? legacy - newModule : newModule - legacy;
+    const tolerance = legacy / 100n; // 1%
+    
+    assert.ok(
+      diff <= tolerance,
+      `Difference too large: legacy=${legacy}, new=${newModule}, diff=${diff}, tolerance=${tolerance}`
+    );
+  });
+});
+
+describe("Smoke: PolygonAggregator (deployed)", async () => {
+  const latestPath = path.join(__dirname, "..", "deployments", "polygon-latest.json");
+  if (!fs.existsSync(latestPath)) {
+    it("polygon-latest.json missing (skipped)", async () => {
+      assert.ok(true);
+    });
+    return;
+  }
+
+  const deployment = JSON.parse(fs.readFileSync(latestPath, "utf8"));
+  const addresses = deployment.contracts as Record<string, { address: Address }>;
+
+  const aggregator = addresses.aggregator?.address;
+  const walletAndDQuick = addresses.walletAndDQuick?.address;
+  const syrupStaking = addresses.syrupStaking?.address;
+  const algebraV3 = addresses.algebraV3?.address;
+  const liquidityManagers = addresses.liquidityManagers?.address;
+  const v2LPStaking = addresses.v2LPStaking?.address;
+
+  const client = createPublicClient({ chain: polygon, transport: http(getRpcUrl()) });
+  const blockNumber =
+    process.env.POLYGON_BLOCK !== undefined
+      ? BigInt(process.env.POLYGON_BLOCK)
+      : await client.getBlockNumber();
+
+  it("aggregator and module addresses exist", async () => {
+    assert.ok(aggregator);
+    assert.ok(walletAndDQuick);
+    assert.ok(syrupStaking);
+    assert.ok(algebraV3);
+    assert.ok(liquidityManagers);
+    assert.ok(v2LPStaking);
+  });
+
+  const sampleWallets = TEST_WALLETS.filter((w: any) => w.expectedSources?.polygon).slice(0, 3);
+  for (const wallet of sampleWallets) {
+    it(`${wallet.label}: aggregator = sum(modules) @ block ${blockNumber}`, async () => {
+      const [agg, m1, m2, m3, m4, m5] = await Promise.all([
+        client.readContract({
+          address: aggregator, abi: BALANCE_OF_ABI,
+          functionName: "balanceOf", args: [wallet.address as Address], blockNumber,
+        }),
+        client.readContract({
+          address: walletAndDQuick, abi: BALANCE_OF_ABI,
+          functionName: "balanceOf", args: [wallet.address as Address], blockNumber,
+        }),
+        client.readContract({
+          address: syrupStaking, abi: BALANCE_OF_ABI,
+          functionName: "balanceOf", args: [wallet.address as Address], blockNumber,
+        }),
+        client.readContract({
+          address: algebraV3, abi: BALANCE_OF_ABI,
+          functionName: "balanceOf", args: [wallet.address as Address], blockNumber,
+        }),
+        client.readContract({
+          address: liquidityManagers, abi: BALANCE_OF_ABI,
+          functionName: "balanceOf", args: [wallet.address as Address], blockNumber,
+        }),
+        client.readContract({
+          address: v2LPStaking, abi: BALANCE_OF_ABI,
+          functionName: "balanceOf", args: [wallet.address as Address], blockNumber,
+        }),
+      ]);
+
+      assert.equal(agg, m1 + m2 + m3 + m4 + m5);
+    });
+  }
+});
+

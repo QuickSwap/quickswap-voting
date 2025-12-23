@@ -19,9 +19,9 @@ export default defineConfig({
     hardhatNetworkHelpers,
   ],
   verify: {
-    // hardhat-verify uses Etherscan API v2 (single key works across chains).
-    // Keep backward-compat with existing env vars.
     etherscan: {
+      // Single API key works across all Etherscan-based explorers (Polygon, Ethereum, Base)
+      // Use: pnpm exec hardhat verify etherscan --network <chain> <address> <args>
       apiKey: process.env.ETHERSCAN_API_KEY || process.env.POLYGONSCAN_API_KEY || "",
     },
   },

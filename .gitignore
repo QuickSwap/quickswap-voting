@@ -41,7 +41,7 @@ build/
 !deployments/allowlists/*.json
 # - Ignore timestamped deployment runs (local history / noise)
 deployments/*-[0-9]*.json
-# - (Optional legacy) If you maintain a consolidated history file, keep it ignored
+deployments/polygon-algebraV3-[0-9]*.json
 deployments/history.json
 
 # Logs
