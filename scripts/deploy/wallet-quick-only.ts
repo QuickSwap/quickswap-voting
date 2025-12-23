@@ -8,11 +8,11 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { type Address, formatEther, isAddress } from "viem";
+import { type Address, createWalletClient, formatEther, http, isAddress } from "viem";
 import { deployWalletQuickModule } from "./deployers.js";
+import hre from "hardhat";
+import type { DeployContractConfig, WalletClient } from "@nomicfoundation/hardhat-viem/types";
 
-const hre = await import("hardhat");
-const viem = (hre as any).viem;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const CHAINS_CONFIG = JSON.parse(
@@ -20,23 +20,22 @@ const CHAINS_CONFIG = JSON.parse(
 ).chains as any;
 
 function getChainConfig(): { chainKey: string; config: any } {
-  const networkName = (hre as any).network.name;
-  const networkChainId = (hre as any).network.config?.chainId;
-  
-  // Try direct match first
+  const networkArgIndex = process.argv.indexOf("--network");
+  const networkName = networkArgIndex !== -1 ? process.argv[networkArgIndex + 1] : undefined;
+
+  if (!networkName) {
+    throw new Error(
+      `Network not specified. Use: --network <chain>\n` +
+      `Available: ${Object.keys(CHAINS_CONFIG).join(", ")}`
+    );
+  }
+
   if (CHAINS_CONFIG[networkName]) {
     return { chainKey: networkName, config: CHAINS_CONFIG[networkName] };
   }
-  
-  // Otherwise, find by chainId
-  for (const [key, config] of Object.entries(CHAINS_CONFIG) as [string, any][]) {
-    if (config.chainId === networkChainId) {
-      return { chainKey: key, config };
-    }
-  }
-  
+
   throw new Error(
-    `Chain "${networkName}" (chainId: ${networkChainId}) not found in config/chains.json.\n` +
+    `Chain "${networkName}" not found in config/chains.json.\n` +
     `Available: ${Object.keys(CHAINS_CONFIG).join(", ")}`
   );
 }
@@ -54,21 +53,33 @@ async function main() {
     );
   }
   
-  const [deployer] = await viem.getWalletClients();
-  const publicClient = await viem.getPublicClient();
+  const connection = await hre.network.connect();
+  const hhViem = connection.viem;
+
+  const rpcUrl = (process.env[config.rpcEnvVar] || config.defaultRpc) as string;
+  if (!rpcUrl) {
+    throw new Error(`Missing RPC URL for ${chainKey}. Set ${config.rpcEnvVar} or update config/chains.json`);
+  }
+
+  const { getAccount } = await import("../utils/keystore.js");
+  const deployerAccount = await getAccount();
+
+  const publicClient = await hhViem.getPublicClient({ transport: http(rpcUrl) });
+  const walletClient = createWalletClient({ account: deployerAccount, transport: http(rpcUrl) }) as unknown as WalletClient;
+  const deployConfig: DeployContractConfig = { client: { wallet: walletClient, public: publicClient } };
   
   console.log("🚀 Deploying WalletQuickModule");
   console.log(`   Chain:    ${config.name} (${config.chainId})`);
-  console.log(`   Deployer: ${deployer.account.address}`);
+  console.log(`   Deployer: ${deployerAccount.address}`);
   console.log(`   QUICK:    ${quickAddress}`);
   
-  const balance = await publicClient.getBalance({ address: deployer.account.address });
+  const balance = await publicClient.getBalance({ address: deployerAccount.address });
   console.log(`   Balance:  ${formatEther(balance)} ETH`);
   console.log("");
   
   // Deploy
   console.log("📦 Deploying WalletQuickModule...");
-  const result = await deployWalletQuickModule(quickAddress);
+  const result = await deployWalletQuickModule(hhViem, quickAddress, deployConfig);
   console.log(`   ✅ Deployed: ${result.address}`);
   
   // Save deployment info
@@ -79,7 +90,7 @@ async function main() {
   fs.writeFileSync(outputFile, JSON.stringify({
     chain: chainKey,
     chainId: config.chainId,
-    deployer: deployer.account.address,
+    deployer: deployerAccount.address,
     deployedAt: new Date().toISOString(),
     contract: {
       name: result.name,

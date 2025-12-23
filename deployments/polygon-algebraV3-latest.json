@@ -1,0 +1,17 @@
+{
+  "chain": "polygon",
+  "chainId": 137,
+  "deployedAt": "2025-12-23T05:28:31.982Z",
+  "deployer": "0x1F8D2668BAaB2B324f61fCf34730BE8e79e8eCCF",
+  "contract": {
+    "name": "AlgebraV3Module",
+    "address": "0xda047161ecb594af531751199bae733775175ce7",
+    "args": [
+      "0xB5C064F955D8e7F38fE0460C556a72987494eE17",
+      "0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6",
+      "0x7F281A8cdF66eF5e9db8434Ec6D97acc1bc01E78",
+      "0x2D98E2FA9da15aa6dC9581AB097Ced7af697CB92"
+    ]
+  },
+  "aggregatorToUpdate": "0x3db49d6b783590966072ea02a5f8bb214a159d4e"
+}

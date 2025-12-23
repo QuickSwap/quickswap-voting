@@ -34,7 +34,14 @@ dist/
 build/
 *.tsbuildinfo
 
-# Deployments (keep history.json and frontend configs only)
+# Deployments
+# - Keep committed "latest" manifests per chain (source of truth for production)
+!deployments/*-latest.json
+# - Keep allowlists committed (governance-controlled inputs)
+!deployments/allowlists/*.json
+# - Ignore timestamped deployment runs (local history / noise)
+deployments/*-[0-9]*.json
+deployments/polygon-algebraV3-[0-9]*.json
 deployments/history.json
 
 # Logs
