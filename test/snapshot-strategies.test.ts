@@ -35,27 +35,33 @@ const getRpcUrl = (chain: { rpcEnvVar: string; defaultRpc: string }): string =>
   process.env[chain.rpcEnvVar] || chain.defaultRpc;
 
 describe("Snapshot Strategy Wrappers", async function () {
-  describe("Polygon Wrappers (current)", async function () {
+  describe("Polygon Wrappers (legacy)", async function () {
     const rpcUrl = getRpcUrl(CHAINS_CONFIG.polygon);
     const client = createPublicClient({
       chain: polygon,
       transport: http(rpcUrl),
     });
 
+    const legacy = CHAINS_CONFIG.polygon.legacy;
+    if (!legacy?.voting8) {
+      it("legacy wrappers not configured (skipped)", () => assert.ok(true));
+      return;
+    }
+
     const voting8 = getContract({
-      address: CHAINS_CONFIG.polygon.wrappers.voting8.address as Address,
+      address: legacy.voting8 as Address,
       abi: ABI_BALANCE_OF,
       client,
     });
 
     const voting10 = getContract({
-      address: CHAINS_CONFIG.polygon.wrappers.voting10.address as Address,
+      address: legacy.voting10 as Address,
       abi: ABI_BALANCE_OF,
       client,
     });
 
     const v3Pools1 = getContract({
-      address: CHAINS_CONFIG.polygon.wrappers.v3Pools1.address as Address,
+      address: legacy.v3Pools1 as Address,
       abi: ABI_BALANCE_OF,
       client,
     });

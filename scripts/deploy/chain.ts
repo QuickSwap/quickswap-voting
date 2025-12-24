@@ -280,43 +280,41 @@ async function main() {
     console.log(`   ${key}: ${result.address}`);
   }
   
-  // Save deployment
+  // Update config/chains.json (source of truth)
+  const chainsConfigPath = path.join(__dirname, "..", "..", "config", "chains.json");
+  const chainsConfig = JSON.parse(fs.readFileSync(chainsConfigPath, "utf8"));
+  
+  chainsConfig.chains[chainKey].deployed = {
+    _updatedAt: new Date().toISOString(),
+    ...Object.fromEntries(Object.entries(deployed).map(([k, v]) => [k, v.address])),
+  };
+  
+  fs.writeFileSync(chainsConfigPath, JSON.stringify(chainsConfig, null, 2) + "\n");
+  console.log(`\n✅ Updated: config/chains.json`);
+  
+  // Save local backup (gitignored)
   const outputDir = path.join(__dirname, "..", "..", "deployments");
   fs.mkdirSync(outputDir, { recursive: true });
   
-  const outputFile = path.join(outputDir, `${chainKey}-${Date.now()}.json`);
-  const payload = {
+  const backupFile = path.join(outputDir, `${chainKey}-${Date.now()}.json`);
+  fs.writeFileSync(backupFile, JSON.stringify({
     chain: chainKey,
     chainId: config.chainId,
     deployer: deployerAccount.address,
     owner: OWNER_ADDRESS,
     deployedAt: new Date().toISOString(),
     contracts: Object.fromEntries(
-      Object.entries(deployed).map(([k, v]) => [
-        k,
-        { address: v.address, name: v.name, args: v.args },
-      ])
+      Object.entries(deployed).map(([k, v]) => [k, { address: v.address, name: v.name, args: v.args }])
     ),
-    modulesEnabled: modules,
-  };
-
-  fs.writeFileSync(outputFile, JSON.stringify(payload, null, 2));
-  
-  console.log(`\n✅ Saved: ${outputFile}`);
-
-  // Also write a stable "latest" file per chain for clean production ops.
-  // This file is intended to be the single source of truth for the last deployment.
-  const latestFile = path.join(outputDir, `${chainKey}-latest.json`);
-  fs.writeFileSync(latestFile, JSON.stringify(payload, null, 2));
-  console.log(`✅ Updated: ${latestFile}`);
+  }, null, 2));
+  console.log(`📄 Backup: ${backupFile}`);
   
   // Next steps
   const mainContract = deployed.aggregator?.address || Object.values(deployed)[0]?.address;
   
   console.log("\n🎯 NEXT STEPS:");
   console.log(`   1. Verify: pnpm exec hardhat verify --network ${chainKey} ${mainContract} ...`);
-  console.log(`   2. Test in Snapshot playground with address: ${mainContract}`);
-  console.log(`   3. Update config/chains.json with new addresses`);
+  console.log(`   2. Test in Snapshot playground: ${mainContract}`);
 }
 
 main().catch((e) => {

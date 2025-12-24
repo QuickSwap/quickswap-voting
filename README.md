@@ -26,88 +26,60 @@ pnpm exec hardhat compile
 pnpm test
 ```
 
-## Deployment
+## Configuration
 
-### Deploy Contracts
+All configuration is in [`config/chains.json`](config/chains.json) (single source of truth).
+
+### Keystore Setup
 
 ```bash
-# Full chain deployment (aggregator + modules)
+pnpm exec tsx scripts/create-keystore.ts
+
+# Add to .env:
+KEYSTORE_PATH=keystores/deployer-0x<address>.json
+```
+
+## Deployment
+
+### Full Chain Deployment
+
+Deploys all modules + aggregator:
+
+```bash
 pnpm exec hardhat run scripts/deploy/chain.ts --network polygon
 pnpm exec hardhat run scripts/deploy/chain.ts --network base
+```
 
-# Wallet-only chains
+### Redeploy Aggregator Only
+
+Reuses existing modules, only deploys new aggregator:
+
+```bash
+pnpm exec hardhat run scripts/deploy/redeploy-aggregator.ts --network polygon
+pnpm exec hardhat run scripts/deploy/redeploy-aggregator.ts --network base
+```
+
+### Wallet-Only Chains
+
+```bash
 pnpm exec hardhat run scripts/deploy/wallet-quick-only.ts --network ethereum
 ```
 
-Deployment artifacts saved to `deployments/<chain>-<timestamp>.json`
+### Owner Address
 
-### Important: Owner Address
+Default owner: `0xDA1077c4b0dd6da1BDF166F30aa4BDbF517d637b`
 
-By default, contracts deploy with owner: `0xDA1077c4b0dd6da1BDF166F30aa4BDbF517d637b`
-
-**For production, set your Safe multisig as owner:**
+Override with your Safe multisig:
 
 ```bash
-OWNER_ADDRESS=0xYourSafeAddress pnpm exec hardhat run scripts/deploy/chain.ts --network polygon
+OWNER_ADDRESS=0xYourSafe pnpm exec hardhat run scripts/deploy/chain.ts --network polygon
 ```
 
-Or configure in `.env`:
+### Verification
 
 ```bash
-OWNER_ADDRESS=0xYourSafeMultisigAddress
+pnpm exec hardhat verify --network <chain> <ADDRESS> <ARGS>
 ```
-
-### Optional: Custom Configuration
-
-Configure `.env` for custom settings:
-
-```bash
-# Use private RPC (recommended for production)
-POLYGON_RPC=https://polygon-mainnet.g.alchemy.com/v2/YOUR_KEY
-
-# For contract verification
-POLYGONSCAN_API_KEY=your_api_key
-
-# Custom keystore path
-KEYSTORE_PATH=keystores/deployer.json
-```
-
-### Optional: Pre-Deployment Validation
-
-Validate configuration before deploying:
-
-```bash
-pnpm exec tsx scripts/check-deployment-ready.ts <chain>
-```
-
-### Verify Contracts
-
-```bash
-pnpm exec hardhat verify --network polygon <CONTRACT_ADDRESS> <CONSTRUCTOR_ARGS>
-```
-
-Requires `POLYGONSCAN_API_KEY` in `.env`
-
-### Post-Deployment
-
-1. **Test in Snapshot Playground:** https://v1.snapshot.box/#/playground/erc20-balance-of
-2. **Compare scores** against existing wrappers (if replacing)
-3. **Configure allowlists** via Safe multisig (if deployed empty):
-
-   ```bash
-   pnpm exec tsx scripts/generate-safe-txs.ts <chain>
-   ```
-
-4. **Update Snapshot space** config after validation
-
-## Configuration
-
-All chain addresses are in [`config/chains.json`](config/chains.json):
-
-- Token addresses (QUICK)
-- Contract addresses (Dragon's Lair, Position Manager, etc.)
-- Module configuration per chain
-- Deployed wrapper addresses
 
 ## Snapshot Strategy
 
@@ -116,33 +88,28 @@ All chain addresses are in [`config/chains.json`](config/chains.json):
   "name": "erc20-balance-of",
   "network": "<CHAIN_ID>",
   "params": {
-    "address": "<AGGREGATOR_OR_MODULE>",
+    "address": "<AGGREGATOR_ADDRESS>",
     "symbol": "QUICK",
     "decimals": 18
   }
 }
 ```
 
+Get the aggregator address from `config/chains.json` → `chains.<chain>.deployed.aggregator`.
+
 ## Testing
 
 ```bash
-pnpm test                    # All tests
-pnpm run baseline:capture    # Capture baseline scores
-pnpm run typecheck           # Type check
+pnpm test
 ```
 
 ## Admin Operations
 
-Allowlists can be updated post-deployment via Safe multisig:
+Update allowlists via Safe multisig:
 
 ```solidity
-// ALM vaults (Gamma, Steer, ICHI)
 liquidityManagersModule.setVaults(address[] vaults);
-
-// V2 LP staking pools
 v2LPStakingModule.setPools(address[] pools);
-
-// Syrup legacy pools
 syrupStakingModule.setLegacyPools(address[] pools);
 ```
 
@@ -150,7 +117,6 @@ Generate Safe transaction JSON:
 
 ```bash
 pnpm exec tsx scripts/generate-safe-txs.ts <chain>
-# Import output to Safe Transaction Builder
 ```
 
 ## License

@@ -101,15 +101,12 @@ describe("Parity: Zero Address Safety", async () => {
   });
 });
 
-describe("Parity: AlgebraV3Module vs V3Pools1 (deployed)", async () => {
-  const algebraV3Path = path.join(__dirname, "..", "deployments", "polygon-algebraV3-latest.json");
-  if (!fs.existsSync(algebraV3Path)) {
-    it("polygon-algebraV3-latest.json missing (skipped)", () => assert.ok(true));
+describe("Parity: AlgebraV3Module vs V3Pools1", async () => {
+  const algebraV3Address = CHAINS_CONFIG.polygon.deployed?.algebraV3 as Address | undefined;
+  if (!algebraV3Address) {
+    it("algebraV3 not deployed (skipped)", () => assert.ok(true));
     return;
   }
-
-  const { contract } = JSON.parse(fs.readFileSync(algebraV3Path, "utf8"));
-  const algebraV3Address = contract.address as Address;
 
   const client = createPublicClient({ chain: polygon, transport: http(getRpcUrl()) });
   const poolsHolder = TEST_WALLETS.find((w: any) => w.label === "pools-holder");
@@ -120,7 +117,6 @@ describe("Parity: AlgebraV3Module vs V3Pools1 (deployed)", async () => {
   }
 
   it(`pools-holder: AlgebraV3Module matches V3Pools1 (±1%)`, async () => {
-    // Use current block since AlgebraV3Module is recently deployed
     const blockNumber = await client.getBlockNumber();
     
     const [legacy, newModule] = await Promise.all([
@@ -134,7 +130,6 @@ describe("Parity: AlgebraV3Module vs V3Pools1 (deployed)", async () => {
       }),
     ]);
 
-    // Allow 1% tolerance for minor calculation differences
     const diff = legacy > newModule ? legacy - newModule : newModule - legacy;
     const tolerance = legacy / 100n; // 1%
     
@@ -145,30 +140,21 @@ describe("Parity: AlgebraV3Module vs V3Pools1 (deployed)", async () => {
   });
 });
 
-describe("Smoke: PolygonAggregator (deployed)", async () => {
-  const latestPath = path.join(__dirname, "..", "deployments", "polygon-latest.json");
-  if (!fs.existsSync(latestPath)) {
-    it("polygon-latest.json missing (skipped)", async () => {
-      assert.ok(true);
-    });
+describe("Smoke: PolygonAggregator", async () => {
+  const deployed = CHAINS_CONFIG.polygon.deployed;
+  if (!deployed?.aggregator) {
+    it("aggregator not deployed (skipped)", () => assert.ok(true));
     return;
   }
 
-  const deployment = JSON.parse(fs.readFileSync(latestPath, "utf8"));
-  const addresses = deployment.contracts as Record<string, { address: Address }>;
-
-  const aggregator = addresses.aggregator?.address;
-  const walletAndDQuick = addresses.walletAndDQuick?.address;
-  const syrupStaking = addresses.syrupStaking?.address;
-  const algebraV3 = addresses.algebraV3?.address;
-  const liquidityManagers = addresses.liquidityManagers?.address;
-  const v2LPStaking = addresses.v2LPStaking?.address;
+  const aggregator = deployed.aggregator as Address;
+  const walletAndDQuick = deployed.walletAndDQuick as Address;
+  const syrupStaking = deployed.syrupStaking as Address;
+  const algebraV3 = deployed.algebraV3 as Address;
+  const liquidityManagers = deployed.liquidityManagers as Address;
+  const v2LPStaking = deployed.v2LPStaking as Address;
 
   const client = createPublicClient({ chain: polygon, transport: http(getRpcUrl()) });
-  const blockNumber =
-    process.env.POLYGON_BLOCK !== undefined
-      ? BigInt(process.env.POLYGON_BLOCK)
-      : await client.getBlockNumber();
 
   it("aggregator and module addresses exist", async () => {
     assert.ok(aggregator);
@@ -181,7 +167,9 @@ describe("Smoke: PolygonAggregator (deployed)", async () => {
 
   const sampleWallets = TEST_WALLETS.filter((w: any) => w.expectedSources?.polygon).slice(0, 3);
   for (const wallet of sampleWallets) {
-    it(`${wallet.label}: aggregator = sum(modules) @ block ${blockNumber}`, async () => {
+    it(`${wallet.label}: aggregator = sum(modules)`, async () => {
+      const blockNumber = await client.getBlockNumber();
+      
       const [agg, m1, m2, m3, m4, m5] = await Promise.all([
         client.readContract({
           address: aggregator, abi: BALANCE_OF_ABI,

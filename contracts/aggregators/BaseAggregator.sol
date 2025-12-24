@@ -11,13 +11,17 @@ import "../modules/Ownable.sol";
  */
 contract BaseAggregator is IVotingModule, Ownable {
     
+    /// @notice Contract version for verification
+    string public constant VERSION = "1.0.1";
+    
     IVotingModule public walletQuickModule;
     IVotingModule public syrupStakingModule;
     IVotingModule public algebraIntegralModule;
     IVotingModule public liquidityManagersModule;
     IVotingModule public v2LPStakingModule;
     
-    event ModuleUpdated(string name, address indexed module);
+    event ModuleUpdated(string name, address indexed oldModule, address indexed newModule);
+    error InvalidModule();
     
     constructor(
         address _owner,
@@ -37,28 +41,38 @@ contract BaseAggregator is IVotingModule, Ownable {
     // ===== Admin: Update individual modules =====
     
     function setWalletQuickModule(address module) external onlyOwner {
+        _validateModule(module);
+        address oldModule = address(walletQuickModule);
         walletQuickModule = IVotingModule(module);
-        emit ModuleUpdated("WalletQuick", module);
+        emit ModuleUpdated("WalletQuick", oldModule, module);
     }
     
     function setSyrupStakingModule(address module) external onlyOwner {
+        _validateModule(module);
+        address oldModule = address(syrupStakingModule);
         syrupStakingModule = IVotingModule(module);
-        emit ModuleUpdated("SyrupStaking", module);
+        emit ModuleUpdated("SyrupStaking", oldModule, module);
     }
     
     function setAlgebraIntegralModule(address module) external onlyOwner {
+        _validateModule(module);
+        address oldModule = address(algebraIntegralModule);
         algebraIntegralModule = IVotingModule(module);
-        emit ModuleUpdated("AlgebraIntegral", module);
+        emit ModuleUpdated("AlgebraIntegral", oldModule, module);
     }
     
     function setLiquidityManagersModule(address module) external onlyOwner {
+        _validateModule(module);
+        address oldModule = address(liquidityManagersModule);
         liquidityManagersModule = IVotingModule(module);
-        emit ModuleUpdated("LiquidityManagers", module);
+        emit ModuleUpdated("LiquidityManagers", oldModule, module);
     }
     
     function setV2LPStakingModule(address module) external onlyOwner {
+        _validateModule(module);
+        address oldModule = address(v2LPStakingModule);
         v2LPStakingModule = IVotingModule(module);
-        emit ModuleUpdated("V2LPStaking", module);
+        emit ModuleUpdated("V2LPStaking", oldModule, module);
     }
     
     // ===== Scoring =====
@@ -161,6 +175,27 @@ contract BaseAggregator is IVotingModule, Ownable {
     
     // ===== Internal =====
     
+    /**
+     * @dev Validate module address before setting
+     * @param module Module address (can be address(0) to disable)
+     */
+    function _validateModule(address module) internal view {
+        if (module == address(0)) return; // address(0) is valid (disables module)
+        
+        // Check it's a contract
+        if (module.code.length == 0) revert InvalidModule();
+        
+        // Check it implements IVotingModule
+        // Note: We use address(1) because ERC721-based modules revert for address(0)
+        try IVotingModule(module).balanceOf(address(1)) {} 
+        catch {
+            revert InvalidModule();
+        }
+    }
+    
+    /**
+     * @dev Safe balance query that returns 0 on any error
+     */
     function _safeBalanceOf(IVotingModule module, address account) internal view returns (uint256) {
         try module.balanceOf(account) returns (uint256 bal) {
             return bal;
