@@ -15,8 +15,6 @@ import "../modules/Ownable.sol";
  * 3. AlgebraV3 - Algebra V3 liquidity positions
  * 4. LiquidityManagers - ALM vaults (Gamma, Steer, ICHI)
  * 5. V2LPStaking - V2 LP staking pools
- * 
- * @custom:security-contact security@quickswap.exchange
  */
 contract PolygonAggregator is IVotingModule, Ownable {
     
@@ -25,7 +23,8 @@ contract PolygonAggregator is IVotingModule, Ownable {
     // ═══════════════════════════════════════════════════════════════
     
     /// @notice Contract version for verification
-    string public constant VERSION = "1.0.0";
+    /// @dev 1.0.1: Fix _validateModule to use address(1) instead of address(0)
+    string public constant VERSION = "1.0.1";
     
     // ═══════════════════════════════════════════════════════════════
     //                            STORAGE
@@ -249,8 +248,9 @@ contract PolygonAggregator is IVotingModule, Ownable {
         // Check it's a contract
         if (module.code.length == 0) revert InvalidModule();
         
-        // Check it implements IVotingModule (try calling balanceOf)
-        try IVotingModule(module).balanceOf(address(0)) {} 
+        // Check it implements IVotingModule by calling balanceOf with a real address
+        // Note: We use address(1) because some modules (ERC721-based) revert for address(0)
+        try IVotingModule(module).balanceOf(address(1)) {} 
         catch {
             revert InvalidModule();
         }

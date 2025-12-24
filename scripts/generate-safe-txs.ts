@@ -89,6 +89,15 @@ function main() {
     fs.readFileSync(deploymentPath, "utf8")
   );
   
+  // Check for AlgebraV3 module update
+  const algebraV3Path = path.join(__dirname, "..", "deployments", `${chain}-algebraV3-latest.json`);
+  let algebraV3Update: { aggregatorToUpdate: string; contract: { address: string } } | null = null;
+  
+  if (fs.existsSync(algebraV3Path)) {
+    console.log(`📂 Found AlgebraV3 module update: ${path.basename(algebraV3Path)}`);
+    algebraV3Update = JSON.parse(fs.readFileSync(algebraV3Path, "utf8"));
+  }
+  
   // Load allowlists
   const allowlistsPath = path.join(__dirname, "..", "deployments", "allowlists", `${chain}.json`);
   console.log(`📂 Loading allowlists: deployments/allowlists/${chain}.json`);
@@ -118,7 +127,33 @@ function main() {
   // Generate transactions
   const transactions: SafeTransaction[] = [];
   
-  // Transaction 1: LiquidityManagersModule.setVaults()
+  // Transaction 0: Update AlgebraV3Module in aggregator (if present)
+  if (algebraV3Update) {
+    const data = encodeAbiParameters(
+      parseAbiParameters("address"),
+      [algebraV3Update.contract.address as `0x${string}`]
+    );
+    
+    transactions.push({
+      to: algebraV3Update.aggregatorToUpdate,
+      value: "0",
+      data: `0xed61c8f4${data.slice(2)}`, // setAlgebraV3Module(address) selector
+      contractMethod: {
+        name: "setAlgebraV3Module",
+        inputs: [{ name: "module", type: "address", internalType: "address" }]
+      },
+      contractInputsValues: {
+        module: algebraV3Update.contract.address
+      }
+    });
+    
+    console.log(`✅ Transaction ${transactions.length}: PolygonAggregator.setAlgebraV3Module()`);
+    console.log(`   To: ${algebraV3Update.aggregatorToUpdate}`);
+    console.log(`   Module: ${algebraV3Update.contract.address}`);
+    console.log("");
+  }
+  
+  // Transaction N: LiquidityManagersModule.setVaults()
   if (allowlists.almVaults.addresses.length > 0) {
     const liquidityManagers = deployment.contracts.liquidityManagers;
     if (!liquidityManagers) {
@@ -142,7 +177,7 @@ function main() {
         }
       });
       
-      console.log(`✅ Transaction 1: LiquidityManagersModule.setVaults()`);
+      console.log(`✅ Transaction ${transactions.length}: LiquidityManagersModule.setVaults()`);
       console.log(`   To: ${liquidityManagers.address}`);
       console.log(`   Vaults: ${allowlists.almVaults.addresses.length}`);
     }
@@ -172,7 +207,7 @@ function main() {
         }
       });
       
-      console.log(`✅ Transaction 2: V2LPStakingModule.setPools()`);
+      console.log(`✅ Transaction ${transactions.length}: V2LPStakingModule.setPools()`);
       console.log(`   To: ${v2LPStaking.address}`);
       console.log(`   Pools: ${allowlists.v2StakingPools.addresses.length}`);
     }
@@ -202,7 +237,7 @@ function main() {
         }
       });
       
-      console.log(`✅ Transaction 3: SyrupStakingModule.setLegacyPools()`);
+      console.log(`✅ Transaction ${transactions.length}: SyrupStakingModule.setLegacyPools()`);
       console.log(`   To: ${syrupStaking.address}`);
       console.log(`   Pools: ${allowlists.syrupLegacyPools.addresses.length}`);
     }
@@ -210,8 +245,13 @@ function main() {
   
   if (transactions.length === 0) {
     console.log("");
-    console.log("⚠️  No transactions generated (all allowlists are empty)");
-    console.log("   Populate deployments/allowlists/polygon.json and re-run");
+    console.log("⚠️  No transactions generated");
+    console.log("   - No AlgebraV3 module update found");
+    console.log("   - All allowlists are empty");
+    console.log("");
+    console.log("💡 To generate transactions:");
+    console.log("   - Deploy AlgebraV3Module (creates polygon-algebraV3-latest.json)");
+    console.log("   - Populate deployments/allowlists/polygon.json");
     return;
   }
   

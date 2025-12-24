@@ -1,4 +1,7 @@
 {
+  "$schema": "./chains.schema.json",
+  "_doc": "Single source of truth: static config + deployed contract addresses",
+  "owner": "0xDA1077c4b0dd6da1BDF166F30aa4BDbF517d637b",
   "chains": {
     "polygon": {
       "chainId": 137,
@@ -22,30 +25,20 @@
         "liquidityManagers": true,
         "v2LPStaking": true
       },
-      "wrappers": {
-        "voting8": {
-          "address": "0x7c87a471abd9bf56d41c752ab7c1b5de91d8dda6",
-          "description": "wallet QUICK + DragonLair QUICKBalance"
-        },
-        "voting10": {
-          "address": "0x59bcc928c513a6a872b7365511ed2a458c4f5d92",
-          "description": "NEWQUICKSRF staking pools aggregate"
-        },
-        "v3Pools1": {
-          "address": "0x2fcb66504ea8ee541176662939ef0c53e95c4a19",
-          "description": "Algebra V3 positions + FarmingCenter L2 NFT"
-        },
-        "polygonAggregator": {
-          "address": "0x3db49d6b783590966072ea02a5f8bb214a159d4e",
-          "description": "wallet+dQUICK + syrup + algebra v3 + ALM vaults + v2 staking",
-          "modules": {
-            "walletAndDQuick": "0x22729e385310f035b54866c270d9f0b2cf0b6d64",
-            "syrupStaking": "0x559781f2b6d8b9499626317d68858f99e45437be",
-            "algebraV3": "0xee6725f9136a91e3f631189960a2eec7208f62c8",
-            "liquidityManagers": "0xda13ca59c0806c6093cf07e6f29b379e31adc181",
-            "v2LPStaking": "0x4880c9ff216ae69cb1fc717575d824314ed862a9"
-          }
-        }
+      "deployed": {
+        "_updatedAt": "2025-12-24T02:19:01.081Z",
+        "aggregator": "0x3fe6dd5156e688c637d0701855b890544568b348",
+        "walletAndDQuick": "0x22729e385310f035b54866c270d9f0b2cf0b6d64",
+        "syrupStaking": "0x559781f2b6d8b9499626317d68858f99e45437be",
+        "algebraV3": "0xda047161ecb594af531751199bae733775175ce7",
+        "liquidityManagers": "0xda13ca59c0806c6093cf07e6f29b379e31adc181",
+        "v2LPStaking": "0x4880c9ff216ae69cb1fc717575d824314ed862a9"
+      },
+      "legacy": {
+        "_note": "Old snapshot wrappers - historical reference only",
+        "voting8": "0x7c87a471abd9bf56d41c752ab7c1b5de91d8dda6",
+        "voting10": "0x59bcc928c513a6a872b7365511ed2a458c4f5d92",
+        "v3Pools1": "0x2fcb66504ea8ee541176662939ef0c53e95c4a19"
       }
     },
     "base": {
@@ -68,7 +61,14 @@
         "liquidityManagers": true,
         "v2LPStaking": true
       },
-      "wrappers": {}
+      "deployed": {
+        "_updatedAt": "2025-12-24T02:34:39.737Z",
+        "aggregator": "0xda13ca59c0806c6093cf07e6f29b379e31adc181",
+        "walletQuick": "0xc52f200f29ac8f37d23ee00a31e6cdafdbd71506",
+        "algebraIntegralV4": "0xacd0d266d504ebbdf4ccd141673a8bd9630b97c8",
+        "liquidityManagers": "0x22729e385310f035b54866c270d9f0b2cf0b6d64",
+        "v2LPStaking": "0x559781f2b6d8b9499626317d68858f99e45437be"
+      }
     },
     "ethereum": {
       "chainId": 1,
@@ -82,7 +82,10 @@
       "modules": {
         "walletQuick": true
       },
-      "wrappers": {}
+      "deployed": {
+        "_updatedAt": "2025-12-23T18:37:48.584Z",
+        "walletQuick": "0x76ca31488f2ac0681299fb15509a57090d393764"
+      }
     },
     "manta": {
       "chainId": 169,
@@ -96,8 +99,8 @@
       "modules": {
         "walletQuick": true
       },
-      "wrappers": {},
-      "_comment": "QUICK token address TBD - update before deployment"
+      "deployed": {},
+      "_todo": "QUICK token address TBD"
     }
   }
 }
