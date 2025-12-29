@@ -40,6 +40,9 @@ deployments/*.json
 !deployments/allowlists/
 !deployments/allowlists/*.json
 
+# Snapshot signed payloads (local only)
+space-message*.json
+
 # Logs
 *.log
 npm-debug.log*
