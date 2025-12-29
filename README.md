@@ -41,6 +41,11 @@ KEYSTORE_PATH=keystores/deployer-0x<address>.json
 
 ## Deployment
 
+### Deployment outputs
+
+- **Source of truth**: `config/chains.json`
+- **Local backups**: `deployments/*.json` (gitignored)
+
 ### Full Chain Deployment
 
 Deploys all modules + aggregator:
@@ -96,6 +101,33 @@ pnpm exec hardhat verify --network <chain> <ADDRESS> <ARGS>
 ```
 
 Get the aggregator address from `config/chains.json` → `chains.<chain>.deployed.aggregator`.
+
+## Debugging Snapshot Settings
+
+To confirm what Snapshot Hub currently has stored for a space:
+
+```bash
+pnpm exec tsx scripts/check-snapshot-space.ts
+SPACE=quickvote.eth pnpm exec tsx scripts/check-snapshot-space.ts
+```
+
+## Publishing Snapshot Settings (Safe)
+
+When using Safe multi-sig, Snapshot space updates are signed as a Safe “message”, but the signed payload still needs to be broadcast to Snapshot Hub.
+
+1) Save the typed-data JSON you signed (the object with `domain`, `types`, `primaryType`, `message`) to a file, e.g. `space-message.json`.
+
+2) Publish it using the Safe prepared signature:
+
+```bash
+pnpm exec tsx scripts/publish-snapshot-settings.ts --file ./space-message.json --sig 0x<preparedSignature>
+```
+
+3) Verify it’s live:
+
+```bash
+pnpm exec tsx scripts/check-snapshot-space.ts
+```
 
 ## Testing
 
