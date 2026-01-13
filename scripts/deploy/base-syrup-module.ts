@@ -191,11 +191,27 @@ async function main() {
   
   const aggregatorAddress = BASE_CONFIG.deployed.aggregator;
   
-  console.log("\n1️⃣ Verify the contract on Basescan:\n");
-  console.log(`   pnpm exec hardhat verify --network base ${syrupModule.address} \\`);
-  console.log(`     "${OWNER_ADDRESS}" \\`);
-  console.log(`     "${factoryAddress}" \\`);
-  console.log(`     "[]"\n`);
+  // Generate verify-args file
+  const verifyArgsDir = path.join(__dirname, "..", "..", "verify-args");
+  fs.mkdirSync(verifyArgsDir, { recursive: true });
+  const verifyArgsFile = path.join(verifyArgsDir, "base-syrup-module.js");
+  fs.writeFileSync(verifyArgsFile, `/**
+ * Constructor arguments for SyrupStakingModule on Base
+ * Generated: ${new Date().toISOString()}
+ * Contract: ${syrupModule.address}
+ */
+module.exports = [
+  "${OWNER_ADDRESS}",  // owner
+  "${factoryAddress}",  // factory
+  []                    // legacyPools
+];
+`);
+  console.log(`📄 Created: verify-args/base-syrup-module.js\n`);
+
+  console.log("1️⃣ Verify the contract on Basescan:\n");
+  console.log(`   pnpm exec hardhat verify --network base \\`);
+  console.log(`     --constructor-args-path verify-args/base-syrup-module.js \\`);
+  console.log(`     ${syrupModule.address}\n`);
   
   console.log("2️⃣ Update the BaseAggregator to use this module:\n");
   console.log(`   Aggregator Address: ${aggregatorAddress}`);
