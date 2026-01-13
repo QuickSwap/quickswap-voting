@@ -52,22 +52,24 @@
       "contracts": {
         "nonfungiblePositionManager": "0x84715977598247125C3D6E2e85370d1F6fDA1eaF",
         "factory": "0xC5396866754799B9720125B104AE01d935Ab9C7b",
-        "poolDeployer": "0xE08026Fd8537d67C501199610c42D08bB34eAa75"
+        "poolDeployer": "0xE08026Fd8537d67C501199610c42D08bB34eAa75",
+        "syrupFactory": "0x4880c9ff216ae69Cb1Fc717575d824314Ed862a9"
       },
       "modules": {
         "walletQuick": true,
-        "syrupStaking": false,
+        "syrupStaking": true,
         "algebraIntegralV4": true,
         "liquidityManagers": true,
         "v2LPStaking": true
       },
       "deployed": {
-        "_updatedAt": "2025-12-24T02:34:39.737Z",
+        "_updatedAt": "2026-01-03T04:57:42.507Z",
         "aggregator": "0xda13ca59c0806c6093cf07e6f29b379e31adc181",
         "walletQuick": "0xc52f200f29ac8f37d23ee00a31e6cdafdbd71506",
         "algebraIntegralV4": "0xacd0d266d504ebbdf4ccd141673a8bd9630b97c8",
         "liquidityManagers": "0x22729e385310f035b54866c270d9f0b2cf0b6d64",
-        "v2LPStaking": "0x559781f2b6d8b9499626317d68858f99e45437be"
+        "v2LPStaking": "0x559781f2b6d8b9499626317d68858f99e45437be",
+        "syrupStaking": "0x4ab15a06d1d5ca5d3e9d495b6f82fbc5b9e99555"
       }
     },
     "ethereum": {
