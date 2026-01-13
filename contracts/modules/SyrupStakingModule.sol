@@ -7,9 +7,8 @@ import "./Ownable.sol";
 /**
  * @title SyrupStakingModule
  * @notice Counts QUICK staked in syrup pools
- * @dev Uses unbounded factory enumeration (like Voting10) + legacy allowlist
+ * @dev Uses factory enumeration (like Voting10) + legacy allowlist for pools not in factory
  * 
- * Compatible chains: Polygon
  */
 
 interface IStakingRewardsFactory {
@@ -21,10 +20,10 @@ interface IStakingRewardsFactory {
 contract SyrupStakingModule is IVotingModule, Ownable {
     
     /// @notice Max factory pools to enumerate (gas protection + alert threshold)
-    uint256 public constant MAX_FACTORY_POOLS = 100;
+    uint256 public constant MAX_FACTORY_POOLS = 50;
     
-    /// @notice Max legacy pools allowed
-    uint256 public constant MAX_LEGACY_POOLS = 50;
+    /// @notice Max legacy pools allowed (pools not deployed via Factory)
+    uint256 public constant MAX_LEGACY_POOLS = 20;
     
     /// @notice Syrup factory for dynamic enumeration
     address public factory;

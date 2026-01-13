@@ -171,12 +171,35 @@ async function main() {
   }, null, 2));
   console.log(`📄 Backup: ${backupFile}`);
   
+  // Generate verify-args file
+  const verifyArgsDir = path.join(__dirname, "..", "..", "verify-args");
+  fs.mkdirSync(verifyArgsDir, { recursive: true });
+  const verifyArgsFile = path.join(verifyArgsDir, `${chainKey}-aggregator.js`);
+  
+  fs.writeFileSync(verifyArgsFile, `/**
+ * Constructor arguments for ${chainKey === "polygon" ? "Polygon" : "Base"}Aggregator
+ * Generated: ${new Date().toISOString()}
+ * Contract: ${aggregator.address}
+ */
+module.exports = [
+  "${OWNER}",  // owner
+${Object.entries(modules).map(([name, addr]) => `  "${addr}",  // ${name}`).join("\n")}
+];
+`);
+  console.log(`📄 Created: verify-args/${chainKey}-aggregator.js`);
+  
   console.log("");
   console.log("=".repeat(60));
   console.log("🎯 NEXT STEPS:");
-  console.log(`   1. Verify contract on explorer`);
-  console.log(`   2. Test in Snapshot playground: ${aggregator.address}`);
-  console.log(`   3. Update Snapshot strategy`);
+  console.log("");
+  console.log("1️⃣ Verify contract:");
+  console.log(`   pnpm exec hardhat verify --network ${chainKey} \\`);
+  console.log(`     --constructor-args-path verify-args/${chainKey}-aggregator.js \\`);
+  console.log(`     ${aggregator.address}`);
+  console.log("");
+  console.log(`2️⃣ Test in Snapshot playground: ${aggregator.address}`);
+  console.log("");
+  console.log(`3️⃣ Update Snapshot strategy`);
 }
 
 main().catch((e) => {
