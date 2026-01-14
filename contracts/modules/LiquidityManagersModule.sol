@@ -49,8 +49,10 @@ contract LiquidityManagersModule is IVotingModule, Ownable {
         if (_quick == address(0)) revert ZeroQuickAddress();
         QUICK = _quick;
         
-        for (uint256 i = 0; i < vaults_.length; i++) {
+        uint256 len = vaults_.length;
+        for (uint256 i; i < len;) {
             _addVaultUnchecked(vaults_[i]);
+            unchecked { ++i; }
         }
     }
     
@@ -71,7 +73,7 @@ contract LiquidityManagersModule is IVotingModule, Ownable {
         if (!isVault[vault]) revert VaultNotFound();
         
         uint256 length = _vaults.length;
-        for (uint256 i = 0; i < length; i++) {
+        for (uint256 i; i < length;) {
             if (_vaults[i] == vault) {
                 _vaults[i] = _vaults[length - 1];
                 _vaults.pop();
@@ -79,6 +81,7 @@ contract LiquidityManagersModule is IVotingModule, Ownable {
                 emit VaultRemoved(vault, _vaults.length);
                 return;
             }
+            unchecked { ++i; }
         }
     }
     
@@ -87,13 +90,16 @@ contract LiquidityManagersModule is IVotingModule, Ownable {
         
         uint256 oldCount = _vaults.length;
         
-        for (uint256 i = 0; i < oldCount; i++) {
+        for (uint256 i; i < oldCount;) {
             isVault[_vaults[i]] = false;
+            unchecked { ++i; }
         }
         delete _vaults;
         
-        for (uint256 i = 0; i < vaults_.length; i++) {
+        uint256 newLen = vaults_.length;
+        for (uint256 i; i < newLen;) {
             _addVaultUnchecked(vaults_[i]);
+            unchecked { ++i; }
         }
         
         emit VaultsReplaced(oldCount, _vaults.length);
@@ -118,8 +124,9 @@ contract LiquidityManagersModule is IVotingModule, Ownable {
     /// @inheritdoc IVotingModule
     function balanceOf(address account) external view override returns (uint256 balance) {
         uint256 length = _vaults.length;
-        for (uint256 i = 0; i < length; i++) {
+        for (uint256 i; i < length;) {
             balance += _quickFromVault(_vaults[i], account);
+            unchecked { ++i; }
         }
     }
     

@@ -63,10 +63,10 @@
         "v2LPStaking": true
       },
       "deployed": {
-        "_updatedAt": "2026-01-13T12:41:42.267Z",
+        "_updatedAt": "2026-01-14T15:42:09.844Z",
         "aggregator": "0x9975bc2fa6590620aeee87bd7e7e4bec0001095c",
         "walletQuick": "0xc52f200f29ac8f37d23ee00a31e6cdafdbd71506",
-        "algebraIntegralV4": "0xacd0d266d504ebbdf4ccd141673a8bd9630b97c8",
+        "algebraIntegralV4": "0x1a58bcb93c1398ad336cb231f9b88b773dfa4870",
         "liquidityManagers": "0x22729e385310f035b54866c270d9f0b2cf0b6d64",
         "v2LPStaking": "0x559781f2b6d8b9499626317d68858f99e45437be",
         "syrupStaking": "0x4e0acd3980a601821b9724586cd3da81cdc7f33a"

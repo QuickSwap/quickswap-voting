@@ -50,6 +50,38 @@
       }
     },
     {
+      "address": "0xf16bd0EEd5b7CB01C4c6C48cB92b72C6f45f976c",
+      "label": "base-lp-holder-outofrange",
+      "description": "BD - Position #663 WETH/QUICK out of range",
+      "expectedSources": {
+        "base": ["algebraV4LP"]
+      },
+      "testCases": {
+        "base": {
+          "tokenId": 663,
+          "expectedQuickMin": 24000,
+          "expectedQuickMax": 25500,
+          "isOutOfRange": true
+        }
+      }
+    },
+    {
+      "address": "0x5bd0235cD68Fe074CC8D665708B2baF9E10ebfdd",
+      "label": "base-lp-holder-inrange",
+      "description": "Position #694 COCK/QUICK full range",
+      "expectedSources": {
+        "base": ["algebraV4LP"]
+      },
+      "testCases": {
+        "base": {
+          "tokenId": 694,
+          "expectedQuickMin": 70,
+          "expectedQuickMax": 90,
+          "isOutOfRange": false
+        }
+      }
+    },
+    {
       "address": "0xbe50cc9cf0905cac4f8f8453bb6c9798898658bd",
       "label": "mainnet-holder",
       "expectedSources": {

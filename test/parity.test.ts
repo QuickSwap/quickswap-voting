@@ -9,8 +9,9 @@ import { describe, it } from "node:test";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { createPublicClient, http, type Address, parseAbi } from "viem";
+import { createPublicClient, http, type Address } from "viem";
 import { polygon } from "viem/chains";
+import { BALANCE_OF_ABI, DRAGON_LAIR_ABI } from "../lib/abis/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -25,9 +26,6 @@ const CHAINS_CONFIG = JSON.parse(
 const TEST_WALLETS = JSON.parse(
   fs.readFileSync(path.join(__dirname, "config/test-wallets.json"), "utf8")
 ).wallets;
-
-const BALANCE_OF_ABI = parseAbi(["function balanceOf(address) view returns (uint256)"]);
-const DRAGON_LAIR_ABI = parseAbi(["function QUICKBalance(address) view returns (uint256)"]);
 
 const POLYGON = {
   QUICK: "0xB5C064F955D8e7F38fE0460C556a72987494eE17" as Address,

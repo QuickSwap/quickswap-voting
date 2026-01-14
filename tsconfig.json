@@ -30,7 +30,11 @@
     "node_modules",
     "artifacts",
     "cache",
-    "types"
+    "types",
+    // Ad-hoc/diagnostic scripts (kept for local debugging, excluded from strict typecheck)
+    "scripts/check-voting-power.ts",
+    "scripts/inspect-positions.ts",
+    "scripts/create-keystore.ts"
   ],
   "ts-node": {
     "esm": true,

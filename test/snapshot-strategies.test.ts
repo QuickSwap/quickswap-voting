@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import { createPublicClient, http, getContract, type Address } from "viem";
 import { polygon, base, mainnet } from "viem/chains";
 import type { BlockNumbers, TestWallet, ChainsConfig } from "./types.js";
+import { BALANCE_OF_ABI } from "../lib/abis/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -21,15 +22,8 @@ const CHAINS_CONFIG = JSON.parse(
   fs.readFileSync(path.join(__dirname, "..", "config", "chains.json"), "utf8")
 ).chains as ChainsConfig;
 
-const ABI_BALANCE_OF = [
-  {
-    type: "function",
-    name: "balanceOf",
-    stateMutability: "view",
-    inputs: [{ name: "account", type: "address" }],
-    outputs: [{ type: "uint256" }],
-  },
-] as const;
+// Use centralized ABI
+const ABI_BALANCE_OF = BALANCE_OF_ABI;
 
 const getRpcUrl = (chain: { rpcEnvVar: string; defaultRpc: string }): string =>
   process.env[chain.rpcEnvVar] || chain.defaultRpc;
@@ -155,7 +149,9 @@ describe("Snapshot Strategy Wrappers", async function () {
       throw new Error("Max retries exceeded");
     }
 
-    for (const wallet of TEST_WALLETS.filter((w) => w.expectedSources?.base)) {
+    // Only wallets explicitly marked as having wallet QUICK on Base.
+    // Some Base test wallets represent LP-only exposure (e.g. Algebra v4 positions) and may have 0 wallet balance.
+    for (const wallet of TEST_WALLETS.filter((w) => w.expectedSources?.base?.includes("walletQUICK"))) {
       it(`${wallet.label} should have QUICK balance`, async function () {
         try {
           const blockNumber = BigInt(BLOCKS.base);

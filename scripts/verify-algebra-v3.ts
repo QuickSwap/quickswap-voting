@@ -1,58 +1,56 @@
 /**
- * Verification script for AlgebraV3Module deployment
- * Shows exact values for documentation
+ * Verify AlgebraV3Module on Polygonscan
+ * 
+ * Usage:
+ *   pnpm exec tsx scripts/verify-algebra-v3.ts
+ * 
+ * Requires:
+ *   - POLYGONSCAN_API_KEY in .env
+ *   - Contract deployed at address in config/chains.json
  */
-import { createPublicClient, http, parseAbi, formatUnits } from "viem";
-import { polygon } from "viem/chains";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 
-const LEGACY_V3POOLS1 = "0x2fcb66504ea8ee541176662939ef0c53e95c4a19";
-const NEW_ALGEBRA_V3 = "0xda047161ecb594af531751199bae733775175ce7";
-const TEST_WALLET = "0x66Bf0d32cb0AC017f4629eE77895410a0b911Ef7";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CONFIG_PATH = path.join(__dirname, "..", "config", "chains.json");
 
-const BALANCE_ABI = parseAbi(["function balanceOf(address) view returns (uint256)"]);
+const config = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
+const polygonConfig = config.chains.polygon;
 
-async function main() {
-  const rpcUrl = process.env.POLYGON_RPC || "https://polygon-rpc.com";
-  const client = createPublicClient({ chain: polygon, transport: http(rpcUrl) });
-  
-  const blockNumber = await client.getBlockNumber();
-  console.log(`\n📊 AlgebraV3Module Verification @ block ${blockNumber}\n`);
-  
-  const [legacy, newModule] = await Promise.all([
-    client.readContract({
-      address: LEGACY_V3POOLS1,
-      abi: BALANCE_ABI,
-      functionName: "balanceOf",
-      args: [TEST_WALLET],
-      blockNumber,
-    }),
-    client.readContract({
-      address: NEW_ALGEBRA_V3,
-      abi: BALANCE_ABI,
-      functionName: "balanceOf",
-      args: [TEST_WALLET],
-      blockNumber,
-    }),
-  ]);
-  
-  console.log(`Legacy V3Pools1:  ${formatUnits(legacy, 18)} QUICK`);
-  console.log(`New AlgebraV3:    ${formatUnits(newModule, 18)} QUICK`);
-  
-  const diff = legacy > newModule ? legacy - newModule : newModule - legacy;
-  const diffPct = Number(diff * 10000n / legacy) / 100;
-  
-  console.log(`\nDifference:       ${formatUnits(diff, 18)} QUICK (${diffPct}%)`);
-  
-  if (diffPct < 0.01) {
-    console.log("Status:           ✅ EXACT PARITY (<0.01%)");
-  } else if (diffPct < 1) {
-    console.log("Status:           ✅ ACCEPTABLE (<1%)");
-  } else {
-    console.log("Status:           ❌ TOO LARGE (>1%)");
-  }
-  
-  console.log("\n");
+const algebraV3Address = polygonConfig.deployed?.algebraV3;
+
+if (!algebraV3Address) {
+  console.error("❌ AlgebraV3 module not deployed (check config/chains.json)");
+  process.exit(1);
 }
 
-main().catch(console.error);
+const quick = polygonConfig.tokens.QUICK;
+const positionManager = polygonConfig.contracts.nonfungiblePositionManager;
+const farmingCenter = polygonConfig.contracts.farmingCenter;
+const poolDeployer = polygonConfig.contracts.poolDeployer;
 
+console.log("🔍 Verifying AlgebraV3Module on Polygonscan");
+console.log(`   Address: ${algebraV3Address}`);
+console.log("");
+
+const command = [
+  "pnpm exec hardhat verify",
+  "--network polygon",
+  algebraV3Address,
+  quick,
+  positionManager,
+  farmingCenter,
+  poolDeployer,
+].join(" ");
+
+console.log(`Running: ${command}\n`);
+
+try {
+  execSync(command, { stdio: "inherit" });
+  console.log("\n✅ Verification complete");
+} catch (e) {
+  console.error("\n❌ Verification failed");
+  process.exit(1);
+}

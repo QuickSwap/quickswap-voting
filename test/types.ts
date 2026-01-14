@@ -31,6 +31,8 @@ export interface ChainConfig {
   };
   contracts: Record<string, string>;
   wrappers: Record<string, WrapperConfig>;
+  // Optional legacy wrapper addresses (historical reference only)
+  legacy?: Record<string, string>;
 }
 
 export interface ChainsConfig {
