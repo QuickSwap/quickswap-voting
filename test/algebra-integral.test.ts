@@ -11,9 +11,10 @@ import { describe, it } from "node:test";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { createPublicClient, http, parseAbi, formatUnits, type Address } from "viem";
+import { createPublicClient, http, formatUnits, type Address } from "viem";
 import { base } from "viem/chains";
 import type { ChainsConfig } from "./types.js";
+import { NFT_POSITION_MANAGER_ABI, ALGEBRA_FACTORY_ABI, ALGEBRA_POOL_ABI } from "../lib/abis/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -139,22 +140,12 @@ function getAmountsForLiquidity(
 }
 
 // ============================================================================
-// Contract ABIs
+// Contract ABIs (from centralized lib/abis)
 // ============================================================================
 
-const POSITION_MANAGER_ABI = parseAbi([
-  "function balanceOf(address owner) view returns (uint256)",
-  "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)",
-  "function positions(uint256 tokenId) view returns (uint88 nonce, address operator, address token0, address token1, address deployer, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)",
-]);
-
-const FACTORY_ABI = parseAbi([
-  "function poolByPair(address tokenA, address tokenB) view returns (address pool)",
-]);
-
-const POOL_ABI = parseAbi([
-  "function globalState() view returns (uint160 price, int24 tick, uint16 fee, uint8 pluginConfig, uint16 communityFee, bool unlocked)",
-]);
+const POSITION_MANAGER_ABI = NFT_POSITION_MANAGER_ABI;
+const FACTORY_ABI = ALGEBRA_FACTORY_ABI;
+const POOL_ABI = ALGEBRA_POOL_ABI;
 
 const BASE = {
   QUICK: CHAINS_CONFIG.base.tokens.QUICK as Address,

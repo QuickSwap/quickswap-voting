@@ -32,9 +32,8 @@
     "cache",
     "types",
     // Ad-hoc/diagnostic scripts (kept for local debugging, excluded from strict typecheck)
-    "scripts/debug-*.ts",
-    "scripts/diagnose-*.ts",
-    "scripts/test-*.ts",
+    "scripts/check-voting-power.ts",
+    "scripts/inspect-positions.ts",
     "scripts/create-keystore.ts"
   ],
   "ts-node": {

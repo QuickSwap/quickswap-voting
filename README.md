@@ -102,6 +102,74 @@ pnpm exec hardhat verify --network <chain> <ADDRESS> <ARGS>
 
 Get the aggregator address from `config/chains.json` → `chains.<chain>.deployed.aggregator`.
 
+## Project Structure
+
+```
+quickswap-voting/
+├── config/           # Configuration (JSON)
+│   └── chains.json   # Single source of truth for all chain configs
+├── contracts/        # Solidity contracts
+│   ├── aggregators/  # Chain-specific aggregator contracts
+│   ├── modules/      # Voting power modules
+│   └── mocks/        # Mock contracts for testing
+├── lib/              # Shared TypeScript code
+│   └── abis/         # Centralized ABI definitions
+│       ├── common.ts    # ERC20, balanceOf, Dragon's Lair
+│       ├── aggregator.ts # Aggregator ABIs per chain
+│       ├── algebra.ts   # NFT Position Manager, Pool, Factory
+│       ├── syrup.ts     # Staking Rewards Factory
+│       └── index.ts     # Re-exports all ABIs
+├── scripts/          # CLI scripts (deployment, validation, admin)
+├── test/             # Tests
+│   ├── integration/  # Integration tests (require RPC)
+│   └── utils/        # Test utilities
+└── deployments/      # Local deployment artifacts (gitignored)
+```
+
+## Available Scripts
+
+### 🔍 Validation & Debugging
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `check-voting-power.ts` | Analyze voting power breakdown for any user | `pnpm exec tsx scripts/check-voting-power.ts <address> [--chain <polygon\|base>]` |
+| `check-aggregator-module.ts` | Verify which modules are connected to aggregator | `pnpm exec tsx scripts/check-aggregator-module.ts [--chain <polygon\|base>]` |
+| `check-config.ts` | Validate chains.json configuration | `pnpm exec tsx scripts/check-config.ts` |
+| `check-deployment-ready.ts` | Pre-deployment checklist validator | `pnpm exec tsx scripts/check-deployment-ready.ts [chain]` |
+| `check-snapshot-space.ts` | Show current Snapshot Hub settings | `pnpm exec tsx scripts/check-snapshot-space.ts` |
+| `check-syrup-module-status.ts` | Inspect syrup staking module state | `pnpm exec tsx scripts/check-syrup-module-status.ts` |
+| `inspect-positions.ts` | Debug Algebra positions in detail | `pnpm exec tsx scripts/inspect-positions.ts <address>` |
+
+### 🧪 Integration Tests (Manual)
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `test/integration/strategies.test.ts` | Test all Snapshot strategies | `pnpm exec tsx test/integration/strategies.test.ts` |
+| `test/integration/algebra-modules.test.ts` | Verify Algebra V3/V4 math correctness | `pnpm exec tsx test/integration/algebra-modules.test.ts` |
+
+### 📝 Verification
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `verify-latest.ts` | Verify latest deployed contract | `pnpm exec tsx scripts/verify-latest.ts` |
+| `verify-algebra-v3.ts` | Verify AlgebraV3Module on Polygonscan | `pnpm exec tsx scripts/verify-algebra-v3.ts` |
+
+### 🔧 Admin Tools
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `generate-safe-txs.ts` | Generate Safe transaction JSON for allowlist updates | `pnpm exec tsx scripts/generate-safe-txs.ts <chain>` |
+| `update-aggregator-module.ts` | Generate Safe tx to update aggregator modules | `pnpm exec tsx scripts/update-aggregator-module.ts` |
+| `create-keystore.ts` | Create encrypted keystore for deployment | `pnpm exec tsx scripts/create-keystore.ts` |
+| `publish-snapshot-settings.ts` | Publish Snapshot settings via Safe signature | See below |
+| `test/utils/capture-baseline.ts` | Capture baseline scores for regression testing | `pnpm exec tsx test/utils/capture-baseline.ts [block]` |
+
+### 📊 Monitoring
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `monitor-pool-limits.ts` | Monitor factory pool enumeration limits | `pnpm exec tsx scripts/monitor-pool-limits.ts` |
+
 ## Debugging Snapshot Settings
 
 To confirm what Snapshot Hub currently has stored for a space:

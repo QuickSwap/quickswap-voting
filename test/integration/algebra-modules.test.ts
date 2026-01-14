@@ -7,8 +7,9 @@
  * Usage: pnpm exec tsx scripts/test-algebra-modules.ts
  */
 
-import { createPublicClient, http, parseAbi, formatUnits } from 'viem';
-import { base, polygon } from 'viem/chains';
+import { createPublicClient, http, formatUnits } from 'viem';
+import { base } from 'viem/chains';
+import { NFT_POSITION_MANAGER_ABI, ALGEBRA_FACTORY_ABI, ALGEBRA_POOL_ABI } from '../../lib/abis/index.js';
 
 // ============================================================================
 // Configuration
@@ -43,20 +44,12 @@ const BASE_CONFIG = {
 };
 
 // ============================================================================
-// ABIs
+// ABIs (from centralized lib/abis)
 // ============================================================================
 
-const nftManagerAbi = parseAbi([
-  'function positions(uint256) view returns (uint88, address, address, address, address, int24, int24, uint128, uint256, uint256, uint128, uint128)',
-]);
-
-const factoryAbi = parseAbi([
-  'function poolByPair(address, address) view returns (address)',
-]);
-
-const poolAbi = parseAbi([
-  'function globalState() view returns (uint160, int24, uint16, uint8, uint16, bool)',
-]);
+const nftManagerAbi = NFT_POSITION_MANAGER_ABI;
+const factoryAbi = ALGEBRA_FACTORY_ABI;
+const poolAbi = ALGEBRA_POOL_ABI;
 
 // ============================================================================
 // V3 Math (same as in the smart contract)
