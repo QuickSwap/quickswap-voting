@@ -70,7 +70,7 @@ describe("Modules: unit tests with mocks (local Hardhat)", () => {
 
     const module = await viem.deployContract("AlgebraIntegralV4Module", [quick.address, pm.address, factory.address]);
 
-    const score = await module.read.balanceOf([user]);
+    const score = (await module.read.balanceOf([user])) as bigint;
     assert.ok(score > 0n, "Expected QUICK > 0 for out-of-range position where QUICK is token1");
   });
 
@@ -113,7 +113,7 @@ describe("Modules: unit tests with mocks (local Hardhat)", () => {
     }
 
     const module = await viem.deployContract("AlgebraIntegralV4Module", [quick.address, pm.address, factory.address]);
-    const score = await module.read.balanceOf([user]);
+    const score = (await module.read.balanceOf([user])) as bigint;
     assert.ok(score > 0n, "Score should be non-zero");
 
     // If MAX_NFTS_PER_USER works, removing one token should not affect beyond cap.
@@ -144,7 +144,7 @@ describe("Modules: unit tests with mocks (local Hardhat)", () => {
 
     const module = await viem.deployContract("SyrupStakingModule", [owner, factory.address, [legacy.address]]);
 
-    const score = await module.read.balanceOf([user]);
+    const score = (await module.read.balanceOf([user])) as bigint;
     assert.equal(score, 3000n);
   });
 
@@ -165,7 +165,7 @@ describe("Modules: unit tests with mocks (local Hardhat)", () => {
     await vault.write.setUserShares([user, 10n]);
 
     const module = await viem.deployContract("LiquidityManagersModule", [owner, quick.address, [vault.address]]);
-    const score = await module.read.balanceOf([user]);
+    const score = (await module.read.balanceOf([user])) as bigint;
     assert.equal(score, 500n);
   });
 });
