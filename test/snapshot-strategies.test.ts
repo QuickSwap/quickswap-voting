@@ -155,7 +155,9 @@ describe("Snapshot Strategy Wrappers", async function () {
       throw new Error("Max retries exceeded");
     }
 
-    for (const wallet of TEST_WALLETS.filter((w) => w.expectedSources?.base)) {
+    // Only wallets explicitly marked as having wallet QUICK on Base.
+    // Some Base test wallets represent LP-only exposure (e.g. Algebra v4 positions) and may have 0 wallet balance.
+    for (const wallet of TEST_WALLETS.filter((w) => w.expectedSources?.base?.includes("walletQUICK"))) {
       it(`${wallet.label} should have QUICK balance`, async function () {
         try {
           const blockNumber = BigInt(BLOCKS.base);

@@ -66,15 +66,16 @@ contract SyrupStakingModule is IVotingModule, Ownable {
     function balanceOf(address account) external view override returns (uint256 balance) {
         // 1. Legacy pools (allowlist)
         uint256 legacyLen = legacyPools.length;
-        for (uint256 i = 0; i < legacyLen; i++) {
+        for (uint256 i; i < legacyLen;) {
             balance += _safeBalanceOf(legacyPools[i], account);
+            unchecked { ++i; }
         }
         
         // 2. Factory pools (bounded enumeration)
         address f = factory;
         if (f == address(0)) return balance;
         
-        for (uint256 i = 0; i < MAX_FACTORY_POOLS; i++) {
+        for (uint256 i; i < MAX_FACTORY_POOLS;) {
             (bool okTok, bytes memory tokData) = f.staticcall(
                 abi.encodeWithSelector(IStakingRewardsFactory.rewardTokens.selector, i)
             );
@@ -88,12 +89,19 @@ contract SyrupStakingModule is IVotingModule, Ownable {
                     rewardToken
                 )
             );
-            if (!okInfo || infoData.length < 32) continue;
+            if (!okInfo || infoData.length < 32) {
+                unchecked { ++i; }
+                continue;
+            }
             
             (address stakingRewards,,) = abi.decode(infoData, (address, uint256, uint256));
-            if (stakingRewards == address(0)) continue;
+            if (stakingRewards == address(0)) {
+                unchecked { ++i; }
+                continue;
+            }
             
             balance += _safeBalanceOf(stakingRewards, account);
+            unchecked { ++i; }
         }
     }
     
@@ -110,7 +118,8 @@ contract SyrupStakingModule is IVotingModule, Ownable {
         address f = factory;
         if (f == address(0)) return (0, maxCount, false);
         
-        for (uint256 i = 0; i < MAX_FACTORY_POOLS + 10; i++) {
+        uint256 checkLimit = MAX_FACTORY_POOLS + 10;
+        for (uint256 i; i < checkLimit;) {
             (bool ok,) = f.staticcall(
                 abi.encodeWithSelector(IStakingRewardsFactory.rewardTokens.selector, i)
             );
@@ -118,6 +127,7 @@ contract SyrupStakingModule is IVotingModule, Ownable {
                 currentCount = i;
                 break;
             }
+            unchecked { ++i; }
         }
         nearLimit = currentCount >= MAX_FACTORY_POOLS - 10;
     }
