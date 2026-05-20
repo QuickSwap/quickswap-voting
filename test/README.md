@@ -91,7 +91,7 @@ Test wrappers in the Snapshot playground before deployment:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `POLYGON_RPC` | Polygon RPC endpoint | `https://polygon-rpc.com` |
+| `POLYGON_RPC` | Polygon RPC endpoint | `https://polygon.drpc.org` |
 | `BASE_RPC` | Base RPC endpoint | `https://mainnet.base.org` |
 | `ETHEREUM_RPC` | Ethereum RPC endpoint | `https://eth.llamarpc.com` |
 

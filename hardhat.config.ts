@@ -42,7 +42,7 @@ export default defineConfig({
   networks: {
     polygon: {
       type: 'http' as const,
-      url: process.env.POLYGON_RPC || 'https://polygon-rpc.com',
+      url: process.env.POLYGON_RPC || 'https://polygon.drpc.org',
       chainId: 137,
     },
     ethereum: {
