@@ -7,7 +7,7 @@
       "chainId": 137,
       "name": "Polygon PoS",
       "rpcEnvVar": "POLYGON_RPC",
-      "defaultRpc": "https://polygon-rpc.com",
+      "defaultRpc": "https://polygon.drpc.org",
       "tokens": {
         "QUICK": "0xB5C064F955D8e7F38fE0460C556a72987494eE17"
       },

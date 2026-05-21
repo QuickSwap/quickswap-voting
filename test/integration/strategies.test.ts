@@ -17,7 +17,7 @@ const strategies = [
     name: 'Polygon Aggregator', 
     network: 'polygon (137)',
     chain: polygon, 
-    rpc: 'https://polygon-rpc.com', 
+    rpc: 'https://polygon.drpc.org',
     addr: '0x3fe6dd5156e688c637d0701855b890544568b348' as Address
   },
   { 
